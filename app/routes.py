@@ -1,12 +1,62 @@
-# app/routes.py
+# app/routes.py (FINAL CODE WITH AUTOMATIC DB SETUP)
 
 from flask import render_template, request, abort, redirect, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
 from . import app, db 
 from app.models import Alumni, Institute, Event, User, Role
 from app.forms import IndividualRegistrationForm, InstituteRegistrationForm, LoginForm, ProfileCompletionForm, AdminStudentRegistrationForm
-from datetime import datetime 
+from datetime import datetime, timedelta 
 from sqlalchemy.exc import IntegrityError 
+
+# --- CRITICAL: Automatic Database Initialization and Data Insertion ---
+# This block runs BEFORE the first request to ensure tables exist.
+with app.app_context():
+    # Only create tables if they don't exist (important for production)
+    if not db.engine.dialect.has_table(db.engine.connect(), "role"):
+        print("Database setup running...")
+        
+        db.create_all()
+        
+        # Insert initial data into the empty database
+        role_admin = Role(name='Institute_Admin')
+        role_alumnus = Role(name='Alumnus')
+        role_student = Role(name='Student')
+        db.session.add_all([role_admin, role_alumnus, role_student])
+        db.session.commit()
+
+        # Fetch the Role IDs (essential for linking users)
+        admin_role_id = Role.query.filter_by(name='Institute_Admin').first().id
+        alumnus_role_id = Role.query.filter_by(name='Alumnus').first().id
+
+        # Insert Initial Institute and Admin User
+        main_institute = Institute(name='Main University', logo_path='logo.png')
+        db.session.add(main_institute)
+
+        admin_user = User(
+            username='admin_main', 
+            email='admin@main.edu', 
+            role_id=admin_role_id,
+            institute_id=main_institute.id
+        )
+        admin_user.set_password('supersecret')
+        db.session.add(admin_user)
+
+        # Insert Sample Alumni and Events
+        sample_alumni = [
+            Alumni(name='Alice Johnson', graduation_year=2025, major='Computer Science', city='New York', phone_number='555-1234', linkedin_id='alice_j', institute_id=main_institute.id, profile_complete=True),
+            Alumni(name='Bob Smith', graduation_year=2024, major='Electrical Engineering', city='San Francisco', phone_number='555-5678', linkedin_id='bob_s', institute_id=main_institute.id, profile_complete=True),
+        ]
+        db.session.add_all(sample_alumni)
+        
+        sample_events = [
+            Event(title='Annual Gala Dinner', date_time=datetime.now() + timedelta(days=60), location='Grand Hall', institute_id=main_institute.id),
+            Event(title='Mentorship Workshop', date_time=datetime.now() + timedelta(days=90), location='Online Webinar', institute_id=main_institute.id),
+        ]
+        db.session.add_all(sample_events)
+        
+        db.session.commit()
+        print("---LIVE DATABASE SCHEMA AND DATA SUCCESSFULLY CREATED ON STARTUP---")
+
 
 # --- PUBLIC ROUTES ---
 
@@ -55,7 +105,7 @@ def alumni_profile(alumni_id):
     return render_template('profile.html', alumnus=alumnus, email_id=email_id)
 
 
-# --- AUTHENTICATION ROUTES ---
+# --- AUTHENTICATION/REGISTRATION ROUTES ---
 
 @app.route('/register_hub')
 def register_hub():
@@ -171,7 +221,7 @@ def logout():
     return redirect(url_for('home'))
 
 
-# --- PROFILE COMPLETION ROUTE (Mandatory after registration) ---
+# --- PROFILE COMPLETION ROUTE ---
 
 @app.route('/complete_profile', methods=['GET', 'POST'])
 @login_required
@@ -207,8 +257,6 @@ def complete_profile():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    """Renders the user's dashboard based on their role."""
-    
     if current_user.role.name in ['Alumnus', 'Student'] and not current_user.alumni_profile.profile_complete:
         return redirect(url_for('complete_profile'))
 
