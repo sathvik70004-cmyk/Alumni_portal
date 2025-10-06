@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .choice-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 50px;
+        }
+        .choice-card {
+            background-color: var(--light-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        .choice-card h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li> 
+                <li><a href="{{ url_for('events_list') }}">Events</a></li> 
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
+                <li><a href="#">Contact</a></li>
+                <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="min-height: 70vh;">
+        <h1 class="main-title" style="margin-top: 50px;">Join the Alumni Network</h1>
+        <p style="text-align: center; font-size: 1.1em;">Choose your registration type below.</p>
+
+        <div class="choice-container">
+            <div class="choice-card">
+                <h2>Alumni / Student</h2>
+                <p>Register as an individual to connect with classmates and view the directory.</p>
+                <a href="{{ url_for('register_individual') }}" class="cta-button" style="margin-top: 20px;">
+                    Register as Individual
+                </a>
+            </div>
+
+            <div class="choice-card">
+                <h2>Institute / Admin</h2>
+                <p>Register your educational institution and gain administrative privileges.</p>
+                <a href="{{ url_for('register_institute') }}" class="cta-button secondary" style="margin-top: 20px;">
+                    Register Institute
+                </a>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+    </footer>
+</body>
+</html>

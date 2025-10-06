@@ -1,0 +1,410 @@
+/* Basic Reset and Variables */
+:root {
+    --primary-color: #004d99; /* Deep Blue for Institution */
+    --secondary-color: #ffaa00; /* Gold/Orange for Accent */
+    --light-bg: #f4f4f9;
+    --text-color: #333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: #ffffff;
+    /* Ensure the body has no default margin for extreme left alignment */
+    margin: 0; 
+    padding: 0;
+}
+
+/* Header and Navigation */
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 0;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0; 
+}
+
+/* Styling for the .logo container (Circular) */
+.logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: white; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    margin-left: 10px;
+}
+
+.logo a {
+    padding-left: 0; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Styling for the logo image */
+.logo img {
+    height: 60px;
+    width: auto;
+    max-width: 90%; 
+    max-height: 90%;
+    object-fit: contain;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+    transition: background-color 0.3s;
+}
+
+nav ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.login-button {
+    background-color: var(--secondary-color);
+    border-radius: 5px;
+    padding: 8px 15px !important;
+    margin-left: 10px;
+    margin-right: 20px; 
+}
+
+.login-button:hover {
+    background-color: #e69500; 
+}
+
+/* Main Content Sections */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+section {
+    padding: 40px 0;
+    border-bottom: 1px solid var(--light-bg);
+}
+
+h1, h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+/* Hero Section */
+#hero {
+    background-color: var(--light-bg);
+    text-align: center;
+    padding: 60px 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+#hero p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+/* Call-to-Action Buttons */
+.cta-button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+    background-color: #003366;
+}
+
+.cta-button.secondary {
+    background-color: var(--secondary-color);
+}
+
+.cta-button.secondary:hover {
+    background-color: #e69500;
+}
+
+
+/* Events Section */
+#events {
+    display: block; 
+    padding: 40px 0; 
+    border-bottom: none; 
+}
+
+#events h2 {
+    width: 100%;
+    text-align: center; 
+    margin-bottom: 30px;
+}
+
+/* Style for the events-wrapper container */
+.events-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    
+    background-color: white;
+    padding: 30px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+}
+
+/* The individual event cards inside the wrapper */
+.event-card {
+    flex: 1;
+    min-width: 300px;
+    background-color: var(--light-bg); 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.event-card h3 {
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+
+.event-card a {
+    display: inline-block;
+    margin-top: 15px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Job Board Section */
+#jobs ul {
+    list-style: none;
+    padding: 0;
+}
+
+#jobs ul li {
+    background-color: var(--light-bg);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.job-tag {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* --- Alumni Directory Styling --- */
+
+.main-title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+}
+
+/* Filter Form Styling */
+.filter-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+#year-select, .filter-form label {
+    font-size: 1.1em;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Table Styling */
+.alumni-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.alumni-table th, .alumni-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.alumni-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.alumni-table tbody tr:nth-child(even) {
+    background-color: var(--light-bg);
+}
+
+.alumni-table tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+/* --- Connect Button Styling --- */
+.contact-button {
+    background-color: var(--secondary-color);
+    color: var(--primary-color); 
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    text-decoration: none; /* Crucial for using <a> tag */
+    display: inline-block;
+}
+
+.contact-button:hover {
+    background-color: #e69500;
+    color: white;
+}
+
+/* --- Alumni Profile Styling --- */
+
+#alumni-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 60px;
+}
+
+.profile-card {
+    display: flex;
+    flex-wrap: wrap; 
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--light-bg);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-photo {
+    flex-shrink: 0; 
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 30px;
+    background-color: #ccc; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid var(--primary-color);
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-details {
+    flex-grow: 1; 
+}
+
+.profile-details h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
+
+.profile-details p {
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.profile-details hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 15px 0;
+}
+
+/* --- Dedicated Events Page Styling --- */
+
+#full-events-list {
+    padding-bottom: 60px;
+}
+
+/* Ensure the wrapper takes full width of the main container */
+#full-events-list .events-wrapper {
+    flex-direction: column;
+}
+
+/* Make individual cards wider and distinct for the main list */
+#full-events-list .event-card.full-card {
+    min-width: 100%; 
+    margin-bottom: 15px;
+    padding: 25px;
+    background-color: white; 
+    border-left: 5px solid var(--secondary-color); 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-card.full-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.event-card.full-card .event-date,
+.event-card.full-card .event-location {
+    font-size: 0.95em;
+    margin-bottom: 5px;
+}
+
+.event-card.full-card .event-description {
+    margin-top: 10px;
+    color: #666;
+}
+
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.9em;
+}

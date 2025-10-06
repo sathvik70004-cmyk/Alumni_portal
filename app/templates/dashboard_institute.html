@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li> 
+                <li><a href="{{ url_for('events_list') }}">Events</a></li> 
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role.name == 'Institute_Admin' %}
+                        <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('dashboard') }}">My Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
+                {% else %}
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main style="min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <h1 class="main-title" style="margin-top: 50px; color: var(--secondary-color);">INSTITUTE ADMINISTRATION PANEL</h1>
+        <h2 style="text-align: center;">Welcome, Admin {{ current_user.username }} of {{ current_user.institute.name }}</h2>
+        <p style="text-align: center; font-size: 1.1em; margin-bottom: 20px;">This is your control panel for student registration and event management.</p>
+        <a href="{{ url_for('register_individual') }}" class="cta-button" style="margin-top: 10px;">Register New Student/Alumni</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+    </footer>
+</body>
+</html>

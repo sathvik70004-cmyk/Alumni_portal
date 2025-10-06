@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institute Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li> 
+                <li><a href="{{ url_for('events_list') }}">Events</a></li> 
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
+                <li><a href="#">Contact</a></li>
+                <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="institute-registration" style="display: flex; justify-content: center; align-items: center; min-height: 50vh;">
+            <div class="form-container">
+                <h1 class="main-title">Register Your Institute</h1>
+                
+                <form method="POST" action="{{ url_for('register_institute') }}">
+                    {{ form.hidden_tag() }} 
+
+                    <fieldset class="form-section">
+                        <legend>Institute Details</legend>
+                        <p>{{ form.institute_name.label }}<br>{{ form.institute_name(class="form-control") }}</p>
+                        {% for error in form.institute_name.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                    </fieldset>
+
+                    <fieldset class="form-section">
+                        <legend>Administrator Account</legend>
+                        <p class="help-text" style="font-size: 0.9em; margin-bottom: 15px;">This will be the main login for managing students and events.</p>
+                        
+                        <p>{{ form.admin_username.label }}<br>{{ form.admin_username(class="form-control") }}</p>
+                        {% for error in form.admin_username.errors %}<span class="error">{{ error }}</span>{% endfor %}
+
+                        <p>{{ form.admin_email.label }}<br>{{ form.admin_email(class="form-control") }}</p>
+                        {% for error in form.admin_email.errors %}<span class="error">{{ error }}</span>{% endfor %}
+
+                        <p>{{ form.admin_password.label }}<br>{{ form.admin_password(class="form-control") }}</p>
+                        {% for error in form.admin_password.errors %}<span class="error">{{ error }}</span>{% endfor %}
+
+                        <p>{{ form.admin_password2.label }}<br>{{ form.admin_password2(class="form-control") }}</p>
+                        {% for error in form.admin_password2.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                    </fieldset>
+
+                    <p>{{ form.submit(class="cta-button submit-button") }}</p>
+                </form>
+
+                <p class="login-prompt">Already have an account? <a href="{{ url_for('login') }}">Log In Here</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="profile-completion-form" style="display: flex; justify-content: center; min-height: 50vh;">
+            <div class="form-container" style="max-width: 600px; margin-top: 50px;">
+                <h1 class="main-title" style="color: var(--secondary-color);">Action Required: Complete Your Profile</h1>
+                <p style="text-align: center; margin-bottom: 25px;">Please provide the following details to activate your account and view the full directory.</p>
+                
+                <form method="POST" action="{{ url_for('complete_profile') }}" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }} 
+
+                    <fieldset class="form-section">
+                        <legend>Professional & Contact Details</legend>
+
+                        <p>{{ form.major.label }}<br>{{ form.major(class="form-control") }}</p>
+                        {% for error in form.major.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                        
+                        <p>{{ form.city.label }}<br>{{ form.city(class="form-control") }}</p>
+                        {% for error in form.city.errors %}<span class="error">{{ error }}</span>{% endfor %}
+
+                        <p>{{ form.phone_number.label }}<br>{{ form.phone_number(class="form-control") }}</p>
+                        {% for error in form.phone_number.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                        
+                        <p>{{ form.linkedin_id.label }}<br>{{ form.linkedin_id(class="form-control") }}</p>
+                        {% for error in form.linkedin_id.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                    </fieldset>
+                    
+                    <fieldset class="form-section">
+                        <legend>Profile Picture</legend>
+                        <p>{{ form.photo.label }}<br>{{ form.photo(class="form-control-file") }}</p>
+                        {% for error in form.photo.errors %}<span class="error">{{ error }}</span>{% endfor %}
+                    </fieldset>
+
+                    <p>{{ form.submit(class="cta-button submit-button") }}</p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+    </footer>
+</body>
+</html>

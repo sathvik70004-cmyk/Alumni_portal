@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Directory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li> 
+                <li><a href="{{ url_for('events_list') }}">Events</a></li>
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="alumni-directory">
+            <h1 class="main-title">Alumni Directory</h1>
+
+            <form action="{{ url_for('alumni_directory') }}" method="GET" class="filter-form">
+                <label for="year-select">Filter by Graduation Year:</label>
+                <select name="year" id="year-select" onchange="this.form.submit()">
+                    <option value="">-- All Years --</option>
+                    {% for year in years %}
+                        <option value="{{ year }}" {% if year|string == selected_year %}selected{% endif %}>
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="cta-button secondary submit-filter-button">Filter</button>
+            </form>
+            <br>
+            
+            <h2>Showing Alumni for: {{ selected_year if selected_year and selected_year.isdigit() else 'All Years' }} ({{ alumni|length }} results)</h2>
+            
+            {% if alumni %}
+            <table class="alumni-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Graduation Year</th>
+                        <th>Major</th>
+                        <th>Current City</th>
+                        <th>Phone</th>
+                        <th>LinkedIn ID</th>
+                        <th>Connect</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alum in alumni %}
+                    <tr>
+                        <td>{{ alum.name }}</td>
+                        <td>{{ alum.graduation_year }}</td>
+                        <td>{{ alum.major }}</td>
+                        <td>{{ alum.city }}</td>
+                        <td>{{ alum.phone_number }}</td>
+                        <td>
+                            <a href="https://linkedin.com/in/{{ alum.linkedin_id }}" target="_blank">
+                                View Profile
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('alumni_profile', alumni_id=alum.id) }}" class="contact-button">
+                                Connect
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No alumni found for the selected year.</p>
+            {% endif %}
+            
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+    </footer>
+</body>
+</html>

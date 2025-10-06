@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ alumnus.name }}'s Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
+                </a>
+            </div>
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li> 
+                <li><a href="{{ url_for('events_list') }}">Events</a></li>
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
+                <li><a href="#">Contact</a></li>
+                <li><a href="#" class="login-button">Login/Register</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="alumni-profile">
+            <h1 class="main-title">Alumnus Profile: {{ alumnus.name }}</h1>
+
+            <div class="profile-card">
+                <div class="profile-photo">
+                    
+                </div>
+                
+                <div class="profile-details">
+                    <h2>{{ alumnus.name }}</h2>
+                    <p><strong>Graduation Year:</strong> {{ alumnus.graduation_year }}</p>
+                    <p><strong>Major:</strong> {{ alumnus.major }}</p>
+                    <p><strong>Current City:</strong> {{ alumnus.city }}</p>
+                    <hr>
+
+                    <h3>Contact Information</h3>
+                    
+                    <p>
+                        <strong>Email ID:</strong> 
+                        <a href="mailto:{{ email_id }}">{{ email_id }}</a>
+                    </p>
+                    
+                    <p>
+                        <strong>LinkedIn:</strong> 
+                        <a href="https://linkedin.com/in/{{ alumnus.linkedin_id }}" target="_blank">
+                            linkedin.com/in/{{ alumnus.linkedin_id }}
+                        </a>
+                    </p>
+
+                    {% if alumnus.phone_number %}
+                    <p>
+                        <strong>Phone:</strong> {{ alumnus.phone_number }} 
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <a href="{{ url_for('alumni_directory') }}" class="cta-button secondary" style="margin-top: 30px;">
+                ← Back to Directory
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+    </footer>
+</body>
+</html>
