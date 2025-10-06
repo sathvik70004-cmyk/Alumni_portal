@@ -1,62 +1,12 @@
-# app/routes.py (FINAL CODE WITH AUTOMATIC DB SETUP)
+# app/routes.py
 
 from flask import render_template, request, abort, redirect, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
-from . import app, db 
+from . import app, db, oauth # CRITICAL: Import 'oauth'
 from app.models import Alumni, Institute, Event, User, Role
 from app.forms import IndividualRegistrationForm, InstituteRegistrationForm, LoginForm, ProfileCompletionForm, AdminStudentRegistrationForm
-from datetime import datetime, timedelta 
+from datetime import datetime 
 from sqlalchemy.exc import IntegrityError 
-
-# --- CRITICAL: Automatic Database Initialization and Data Insertion ---
-# This block runs BEFORE the first request to ensure tables exist.
-with app.app_context():
-    # Only create tables if they don't exist (important for production)
-    if not db.engine.dialect.has_table(db.engine.connect(), "role"):
-        print("Database setup running...")
-        
-        db.create_all()
-        
-        # Insert initial data into the empty database
-        role_admin = Role(name='Institute_Admin')
-        role_alumnus = Role(name='Alumnus')
-        role_student = Role(name='Student')
-        db.session.add_all([role_admin, role_alumnus, role_student])
-        db.session.commit()
-
-        # Fetch the Role IDs (essential for linking users)
-        admin_role_id = Role.query.filter_by(name='Institute_Admin').first().id
-        alumnus_role_id = Role.query.filter_by(name='Alumnus').first().id
-
-        # Insert Initial Institute and Admin User
-        main_institute = Institute(name='Main University', logo_path='logo.png')
-        db.session.add(main_institute)
-
-        admin_user = User(
-            username='admin_main', 
-            email='admin@main.edu', 
-            role_id=admin_role_id,
-            institute_id=main_institute.id
-        )
-        admin_user.set_password('supersecret')
-        db.session.add(admin_user)
-
-        # Insert Sample Alumni and Events
-        sample_alumni = [
-            Alumni(name='Alice Johnson', graduation_year=2025, major='Computer Science', city='New York', phone_number='555-1234', linkedin_id='alice_j', institute_id=main_institute.id, profile_complete=True),
-            Alumni(name='Bob Smith', graduation_year=2024, major='Electrical Engineering', city='San Francisco', phone_number='555-5678', linkedin_id='bob_s', institute_id=main_institute.id, profile_complete=True),
-        ]
-        db.session.add_all(sample_alumni)
-        
-        sample_events = [
-            Event(title='Annual Gala Dinner', date_time=datetime.now() + timedelta(days=60), location='Grand Hall', institute_id=main_institute.id),
-            Event(title='Mentorship Workshop', date_time=datetime.now() + timedelta(days=90), location='Online Webinar', institute_id=main_institute.id),
-        ]
-        db.session.add_all(sample_events)
-        
-        db.session.commit()
-        print("---LIVE DATABASE SCHEMA AND DATA SUCCESSFULLY CREATED ON STARTUP---")
-
 
 # --- PUBLIC ROUTES ---
 
@@ -105,7 +55,7 @@ def alumni_profile(alumni_id):
     return render_template('profile.html', alumnus=alumnus, email_id=email_id)
 
 
-# --- AUTHENTICATION/REGISTRATION ROUTES ---
+# --- AUTHENTICATION ROUTES ---
 
 @app.route('/register_hub')
 def register_hub():
@@ -221,8 +171,6 @@ def logout():
     return redirect(url_for('home'))
 
 
-# --- PROFILE COMPLETION ROUTE ---
-
 @app.route('/complete_profile', methods=['GET', 'POST'])
 @login_required
 def complete_profile():
@@ -314,3 +262,46 @@ def admin_register_student():
             flash('Error: Username or Email already exists.', 'danger')
 
     return render_template('admin_register_student.html', title='Register New Student', form=form)
+
+# --- GOOGLE OAUTH ROUTES (NEW) ---
+
+@app.route('/login/google')
+def google_login():
+    """Redirects the user to the Google OAuth login page."""
+    redirect_uri = url_for('google_auth', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@app.route('/login/google/authorized')
+def google_auth():
+    """Handles the response (token) from Google after user signs in."""
+    token = oauth.google.authorize_access_token()
+    userinfo = oauth.google.parse_id_token(token)
+
+    email = userinfo['email']
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        # NEW USER: Create a user account but force profile completion.
+        alumnus_role = Role.query.filter_by(name='Alumnus').first() 
+        
+        new_user = User(
+            username=userinfo['name'], 
+            email=email,
+            role_id=alumnus_role.id
+        )
+        new_user.set_password('GOOGLE_OAUTH_USER_NO_PASSWORD') 
+        db.session.add(new_user)
+        db.session.commit()
+        user = new_user
+
+    login_user(user)
+    
+    # CRITICAL: Since this is a new sign-up, force them to the completion page
+    # NOTE: The redirect below assumes a user needs a profile, even if they used Google.
+    if user.alumni_profile is None or not user.alumni_profile.profile_complete:
+        flash('Successfully signed in with Google. Please complete your profile details.', 'warning')
+        return redirect(url_for('complete_profile'))
+        
+    flash('Login successful via Google!', 'success')
+    return redirect(url_for('home'))

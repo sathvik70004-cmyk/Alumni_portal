@@ -74,3 +74,17 @@ class AdminStudentRegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('That email is already registered to a user.')
+        
+# app/forms.py (Add this class to the end)
+
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, SubmitField, DateTimeLocalField
+from wtforms.validators import DataRequired, Length
+
+class EventForm(FlaskForm):
+    title = StringField('Event Title', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    # DateTimeLocalField is a specialized field for date/time input
+    date_time = DateTimeLocalField('Date & Time', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    location = StringField('Location', validators=[DataRequired(), Length(max=100)])
+    submit = SubmitField('Add Event')

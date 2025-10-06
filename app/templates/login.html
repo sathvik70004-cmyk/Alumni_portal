@@ -43,6 +43,7 @@
                     {{ form.hidden_tag() }} 
                     
                     <fieldset class="form-section">
+                        <legend>Use Username / Email</legend>
                         <p>{{ form.username_or_email.label }}<br>
                            {{ form.username_or_email(class="form-control") }}</p>
                         
@@ -52,6 +53,13 @@
                         <p>{{ form.submit(class="cta-button submit-button") }}</p>
                     </fieldset>
                 </form>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <p style="margin-bottom: 10px;">— OR —</p>
+                    <a href="{{ url_for('google_login') }}" class="cta-button" style="background-color: #db4437; width: 100%; display: block; padding: 12px 25px;">
+                        Sign in with Google
+                    </a>
+                </div>
 
                 <p class="login-prompt">
                     New User? <a href="{{ url_for('register_hub') }}">Register Here</a>
