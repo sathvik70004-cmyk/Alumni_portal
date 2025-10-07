@@ -5,6 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .modern-login-card {
+            max-width: 400px;
+            width: 100%;
+            padding: 40px 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+        .modern-login-card .logo {
+            margin-bottom: 25px;
+        }
+        .login-input {
+            width: 100%;
+            padding: 14px 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .btn-google {
+            background-color: #db4437; /* Google Red */
+            color: white !important;
+            border: none;
+            width: 100%;
+            padding: 12px 0;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            display: block;
+            text-decoration: none;
+        }
+        .btn-google:hover {
+            background-color: #c03d32;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -25,13 +62,14 @@
     </header>
 
     <main>
-        <section id="login-form" style="display: flex; justify-content: center; align-items: center; min-height: 50vh;">
-            <div class="form-container">
-                <h1 class="main-title">Alumni Network Login</h1>
+        <section id="login-form" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+            <div class="modern-login-card">
+                
+                <h1 style="color: var(--primary-color); font-size: 1.8em; margin-bottom: 30px;">Alumni Sign In</h1>
                 
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
-                        <div class="flashes">
+                        <div class="flashes" style="margin-bottom: 20px;">
                             {% for category, message in messages %}
                                 <div class="flash-{{ category or 'info' }}">{{ message }}</div>
                             {% endfor %}
@@ -42,27 +80,25 @@
                 <form method="POST" action="{{ url_for('login') }}">
                     {{ form.hidden_tag() }} 
                     
-                    <fieldset class="form-section">
-                        <legend>Use Username / Email</legend>
-                        <p>{{ form.username_or_email.label }}<br>
-                           {{ form.username_or_email(class="form-control") }}</p>
-                        
-                        <p>{{ form.password.label }}<br>
-                           {{ form.password(class="form-control") }}</p>
-                        
-                        <p>{{ form.submit(class="cta-button submit-button") }}</p>
-                    </fieldset>
+                    <p>{{ form.username_or_email(class="login-input", placeholder="Email or Username", required=true) }}</p>
+                    
+                    <p>{{ form.password(class="login-input", placeholder="Password", required=true) }}</p>
+                    
+                    <p>{{ form.submit(class="cta-button submit-button", style="width: 100%; padding: 12px; font-size: 1.1em;") }}</p>
                 </form>
 
-                <div style="text-align: center; margin-top: 20px;">
-                    <p style="margin-bottom: 10px;">— OR —</p>
-                    <a href="{{ url_for('google_login') }}" class="cta-button" style="background-color: #db4437; width: 100%; display: block; padding: 12px 25px;">
-                        Sign in with Google
+                <p style="font-size: 0.9em; margin: 15px 0;">Forgot Password?</p> 
+
+                <div style="margin-top: 25px;">
+                    <p style="margin-bottom: 10px; color: #777;">— OR —</p>
+                    
+                    <a href="{{ url_for('google_login') }}" class="btn-google">
+                        Sign In with Google
                     </a>
                 </div>
 
-                <p class="login-prompt">
-                    New User? <a href="{{ url_for('register_hub') }}">Register Here</a>
+                <p class="login-prompt" style="margin-top: 30px; font-size: 0.9em;">
+                    Don't have an account? <a href="{{ url_for('register_hub') }}" style="font-weight: bold; color: var(--primary-color);">Create here</a>
                 </p>
             </div>
         </section>
