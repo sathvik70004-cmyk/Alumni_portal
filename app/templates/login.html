@@ -27,7 +27,7 @@
             font-size: 1em;
         }
         .btn-google {
-            background-color: #db4437; /* Google Red */
+            background-color: #db4437;
             color: white !important;
             border: none;
             width: 100%;
@@ -88,14 +88,6 @@
                 </form>
 
                 <p style="font-size: 0.9em; margin: 15px 0;">Forgot Password?</p> 
-
-                <div style="margin-top: 25px;">
-                    <p style="margin-bottom: 10px; color: #777;">— OR —</p>
-                    
-                    <a href="{{ url_for('google_login') }}" class="btn-google">
-                        Sign In with Google
-                    </a>
-                </div>
 
                 <p class="login-prompt" style="margin-top: 30px; font-size: 0.9em;">
                     Don't have an account? <a href="{{ url_for('register_hub') }}" style="font-weight: bold; color: var(--primary-color);">Create here</a>
