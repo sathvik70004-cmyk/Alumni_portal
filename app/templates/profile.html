@@ -30,7 +30,11 @@
 
             <div class="profile-card">
                 <div class="profile-photo">
-                    
+                    <img 
+                        src="{{ url_for('static', filename='images/' + alumnus.photo_file) }}" 
+                        alt="{{ alumnus.name }}'s Photo"
+                        style="object-fit: cover; width: 100%; height: 100%;"
+                    >
                 </div>
                 
                 <div class="profile-details">

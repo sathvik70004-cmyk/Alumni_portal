@@ -3,18 +3,22 @@
 from flask import render_template, request, abort, redirect, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
 from . import app, db 
+from .utils import save_profile_picture # NEW IMPORT: Utility for image saving
 from app.models import Alumni, Institute, Event, User, Role
 from app.forms import IndividualRegistrationForm, InstituteRegistrationForm, LoginForm, ProfileCompletionForm, AdminStudentRegistrationForm
-from datetime import datetime 
+from datetime import datetime, timedelta 
 from sqlalchemy.exc import IntegrityError 
 
 # --- CRITICAL: Automatic Database Initialization and Data Insertion ---
+# This block runs BEFORE the first request to ensure tables exist and are populated.
 with app.app_context():
+    # Only create tables if the 'role' table (a key table) doesn't exist.
     if not db.engine.dialect.has_table(db.engine.connect(), "role"):
         print("Database setup running...")
         
         db.create_all()
         
+        # Insert initial data into the empty database
         role_admin = Role(name='Institute_Admin')
         role_alumnus = Role(name='Alumnus')
         role_student = Role(name='Student')
@@ -99,7 +103,7 @@ def alumni_profile(alumni_id):
     return render_template('profile.html', alumnus=alumnus, email_id=email_id)
 
 
-# --- AUTHENTICATION ROUTES (CLEANED) ---
+# --- AUTHENTICATION ROUTES ---
 
 @app.route('/register_hub')
 def register_hub():
@@ -215,6 +219,8 @@ def logout():
     return redirect(url_for('home'))
 
 
+# --- PROFILE COMPLETION ROUTE (Handles Image Saving) ---
+
 @app.route('/complete_profile', methods=['GET', 'POST'])
 @login_required
 def complete_profile():
@@ -229,13 +235,22 @@ def complete_profile():
     form = ProfileCompletionForm()
 
     if form.validate_on_submit():
+        # CALL THE FILE SAVING FUNCTION
+        if form.photo.data:
+            alumni_id = current_user.alumni_profile.id
+            picture_file = save_profile_picture(form.photo.data, alumni_id)
+        else:
+            picture_file = 'default_user.png'
+            
         alumni = current_user.alumni_profile
         alumni.major = form.major.data
         alumni.city = form.city.data
         alumni.phone_number = form.phone_number.data
         alumni.linkedin_id = form.linkedin_id.data
+        
+        # Store the filename in the database
+        alumni.photo_file = picture_file 
         alumni.profile_complete = True 
-        alumni.photo_file = 'user_' + str(alumni.id) + '.png' 
 
         db.session.commit()
         flash('Profile successfully completed! You now have full access.', 'success')
