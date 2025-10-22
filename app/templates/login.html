@@ -6,6 +6,7 @@
     <title>User Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
+        /* Specific CSS for the clean, centered card design */
         .modern-login-card {
             max-width: 400px;
             width: 100%;
@@ -15,8 +16,10 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
             text-align: center;
         }
-        .modern-login-card .logo {
-            margin-bottom: 25px;
+        .modern-login-card h1 {
+            color: var(--primary-color); 
+            font-size: 1.8em; 
+            margin-bottom: 30px;
         }
         .login-input {
             width: 100%;
@@ -27,7 +30,7 @@
             font-size: 1em;
         }
         .btn-google {
-            background-color: #db4437;
+            background-color: #db4437; /* Google Red */
             color: white !important;
             border: none;
             width: 100%;
@@ -80,14 +83,24 @@
                 <form method="POST" action="{{ url_for('login') }}">
                     {{ form.hidden_tag() }} 
                     
-                    <p>{{ form.username_or_email(class="login-input", placeholder="Email or Username", required=true) }}</p>
-                    
-                    <p>{{ form.password(class="login-input", placeholder="Password", required=true) }}</p>
-                    
-                    <p>{{ form.submit(class="cta-button submit-button", style="width: 100%; padding: 12px; font-size: 1.1em;") }}</p>
+                    <fieldset class="form-section" style="border: none; padding: 0;">
+                        <p>{{ form.username_or_email(class="login-input", placeholder="Email or Username", required=true) }}</p>
+                        
+                        <p>{{ form.password(class="login-input", placeholder="Password", required=true) }}</p>
+                        
+                        <p>{{ form.submit(class="cta-button submit-button", style="width: 100%; padding: 12px; font-size: 1.1em; margin-top: 5px; background-color: var(--primary-color);") }}</p>
+                    </fieldset>
                 </form>
 
                 <p style="font-size: 0.9em; margin: 15px 0;">Forgot Password?</p> 
+
+                <div style="margin-top: 25px;">
+                    <p style="margin-bottom: 10px; color: #777;">— OR —</p>
+                    
+                    <a href="{{ url_for('google_login') }}" class="btn-google">
+                        Sign In with Google
+                    </a>
+                </div>
 
                 <p class="login-prompt" style="margin-top: 30px; font-size: 0.9em;">
                     Don't have an account? <a href="{{ url_for('register_hub') }}" style="font-weight: bold; color: var(--primary-color);">Create here</a>
