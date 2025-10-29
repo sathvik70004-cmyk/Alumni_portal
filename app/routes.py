@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 # app/routes.py (Full Code)
+=======
+# app/routes.py (Full Code with ML Route Added)
+>>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
 
 from flask import render_template, request, abort, redirect, url_for, flash, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from . import app, db 
 from .utils import save_profile_picture 
+<<<<<<< HEAD
 from .ml_utils import get_recommendations # NEW IMPORT: ML utility
+=======
+from .ml_utils import get_recommendations # CRITICAL IMPORT: ML utility
+>>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
 from app.models import Alumni, Institute, Event, User, Role
 from app.forms import IndividualRegistrationForm, InstituteRegistrationForm, LoginForm, ProfileCompletionForm, AdminStudentRegistrationForm
 from datetime import datetime, timedelta 
@@ -231,11 +239,8 @@ def complete_profile():
     form = ProfileCompletionForm()
 
     if form.validate_on_submit():
-        alumni = current_user.alumni_profile
-        alumni.major = form.major.data
-        alumni.city = form.city.data
-        alumni.phone_number = form.phone_number.data
-        alumni.linkedin_id = form.linkedin_id.data
+<<<<<<< HEAD
+=======
         
         if form.photo.data:
             alumni_id = current_user.alumni_profile.id
@@ -243,6 +248,22 @@ def complete_profile():
         else:
             picture_file = 'default_user.png'
 
+>>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
+        alumni = current_user.alumni_profile
+        alumni.major = form.major.data
+        alumni.city = form.city.data
+        alumni.phone_number = form.phone_number.data
+        alumni.linkedin_id = form.linkedin_id.data
+        
+<<<<<<< HEAD
+        if form.photo.data:
+            alumni_id = current_user.alumni_profile.id
+            picture_file = save_profile_picture(form.photo.data, alumni_id)
+        else:
+            picture_file = 'default_user.png'
+
+=======
+>>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
         alumni.photo_file = picture_file 
         alumni.profile_complete = True 
 
@@ -346,3 +367,87 @@ def admin_register_student():
             flash('Error: Username or Email already exists.', 'danger')
 
     return render_template('admin_register_student.html', title='Register New Student', form=form)
+
+# --- GOOGLE OAUTH ROUTES (RESTORED) ---
+
+@app.route('/login/google')
+def google_login():
+    """Redirects the user to the Google OAuth login page."""
+    # CRITICAL: Imports the oauth object defined in __init__.py
+    from . import oauth
+    redirect_uri = url_for('google_auth', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@app.route('/login/google/authorized')
+def google_auth():
+    """Handles the response (token) from Google after user signs in."""
+    from . import oauth
+    
+    try:
+        token = oauth.google.authorize_access_token()
+        userinfo = oauth.google.parse_id_token(token, nonce=None) 
+    except Exception as e:
+        flash(f'Google sign-in failed. Please try logging in normally. Error: {str(e)}', 'danger')
+        return redirect(url_for('login'))
+
+    email = userinfo.get('email')
+    if not email:
+        flash('Could not retrieve email from Google.', 'danger')
+        return redirect(url_for('login'))
+
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        # NEW USER: Create a user account but force profile completion.
+        try:
+            alumnus_role = Role.query.filter_by(name='Alumnus').first() 
+            main_institute = Institute.query.get(1)
+
+            if not alumnus_role or not main_institute:
+                flash('Application error: Critical setup data (Role/Institute) is missing.', 'danger')
+                return redirect(url_for('login'))
+                
+            username = userinfo.get('name', email.split('@')[0]).replace(" ", "") 
+
+            # Create Alumni Profile record
+            new_alumni_profile = Alumni(
+                name=userinfo.get('name', 'Google User'),
+                graduation_year=datetime.now().year, 
+                institute_id=main_institute.id, 
+                profile_complete=False 
+            )
+            
+            # Create User record and link it
+            user = User(
+                username=username, 
+                email=email,
+                role_id=alumnus_role.id,
+                institute_id=main_institute.id,
+                alumni_profile=new_alumni_profile 
+            )
+            user.set_password('GOOGLE_OAUTH_USER_NO_PASSWORD') 
+            
+            db.session.add_all([user, new_alumni_profile])
+            db.session.commit()
+            flash('New account created via Google. Please complete your profile.', 'success')
+
+        except IntegrityError: 
+            db.session.rollback()
+            flash('Error: This email is already linked to an account.', 'danger')
+            return redirect(url_for('login'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'An unexpected error occurred during creation: {str(e)}', 'danger')
+            return redirect(url_for('login'))
+
+
+    login_user(user)
+    
+    # Force profile completion if needed
+    if user.alumni_profile is None or not user.alumni_profile.profile_complete:
+        flash('Successfully signed in with Google. Please complete your profile details.', 'warning')
+        return redirect(url_for('complete_profile'))
+        
+    flash('Login successful via Google!', 'success')
+    return redirect(url_for('home'))

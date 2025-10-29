@@ -14,10 +14,11 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
                 </a>
             </div>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li> 
-                <li><a href="{{ url_for('events_list') }}">Events</a></li> 
-                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
+             <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('events_list') }}">Events</a></li>
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
+
                 {% if current_user.is_authenticated %}
                     {% if current_user.role.name == 'Institute_Admin' %}
                         <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
@@ -26,8 +27,7 @@
                     {% endif %}
                     <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
                 {% else %}
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+                    <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -38,10 +38,11 @@
         <h2 style="text-align: center; color: var(--primary-color);">Alumni / Student Dashboard</h2>
         <p style="text-align: center; font-size: 1.1em;">Your profile is now complete. You have full access to the portal features.</p>
         <a href="{{ url_for('alumni_directory') }}" class="cta-button" style="margin-top: 20px;">View Directory</a>
+        <a href="{{ url_for('recommendations') }}" class="cta-button secondary" style="margin-top: 10px;">View Connection Recommendations</a>
     </main>
 
     <footer>
-        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+        <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
     </footer>
 </body>
 </html>

@@ -14,13 +14,20 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
                 </a>
             </div>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li> 
-                <li><a href="{{ url_for('events_list') }}">Events</a></li> 
-                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
+             <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('events_list') }}">Events</a></li>
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
+
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('dashboard') }}" class="login-button">Admin Panel</a></li>
-                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    {% if current_user.role.name == 'Institute_Admin' %}
+                        <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('dashboard') }}">My Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -33,22 +40,18 @@
                 <h2 style="text-align: center; font-size: 1.2em; color: gray;">For {{ current_user.institute.name }}</h2>
 
                 <form method="POST" action="{{ url_for('admin_register_student') }}">
-                    {{ form.hidden_tag() }} 
+                    {{ form.hidden_tag() }}
 
                     <fieldset class="form-section">
                         <legend>Profile Details</legend>
                         <p>{{ form.name.label }}<br>{{ form.name(class="form-control") }}</p>
                         {% for error in form.name.errors %}<span class="error">{{ error }}</span>{% endfor %}
-
                         <p>{{ form.graduation_year.label }}<br>{{ form.graduation_year(class="form-control") }}</p>
                         {% for error in form.graduation_year.errors %}<span class="error">{{ error }}</span>{% endfor %}
-
                         <p>{{ form.major.label }}<br>{{ form.major(class="form-control") }}</p>
                         {% for error in form.major.errors %}<span class="error">{{ error }}</span>{% endfor %}
-                        
                         <p>{{ form.city.label }}<br>{{ form.city(class="form-control") }}</p>
                         {% for error in form.city.errors %}<span class="error">{{ error }}</span>{% endfor %}
-
                         <div style="display: flex; gap: 20px;">
                             <div style="flex: 1;">
                                 <p>{{ form.phone_number.label }}<br>{{ form.phone_number(class="form-control") }}</p>
@@ -64,10 +67,8 @@
                     <fieldset class="form-section">
                         <legend>Login Credentials</legend>
                         <p class="help-text" style="font-size: 0.9em; margin-bottom: 15px;">A default password ("Password123") will be assigned. They must change this on first login.</p>
-
                         <p>{{ form.email.label }}<br>{{ form.email(class="form-control") }}</p>
                         {% for error in form.email.errors %}<span class="error">{{ error }}</span>{% endfor %}
-
                         <p>{{ form.username.label }}<br>{{ form.username(class="form-control") }}</p>
                         {% for error in form.username.errors %}<span class="error">{{ error }}</span>{% endfor %}
                     </fieldset>
@@ -79,7 +80,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+        <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
     </footer>
 </body>
 </html>
