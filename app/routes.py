@@ -346,3 +346,70 @@ def admin_register_student():
             flash('Error: Username or Email already exists.', 'danger')
 
     return render_template('admin_register_student.html', title='Register New Student', form=form)
+
+# --- GOOGLE OAUTH ROUTES (RESTORED) ---
+
+@app.route('/login/google')
+def google_login():
+    """Redirects the user to the Google OAuth login page."""
+    # CRITICAL: Imports the oauth object defined in __init__.py
+    from . import oauth
+    redirect_uri = url_for('google_auth', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@app.route('/login/google/authorized')
+def google_auth():
+    """Handles the response (token) from Google after user signs in."""
+    from . import oauth
+    token = oauth.google.authorize_access_token()
+    # Use parse_id_token for OpenID Connect flows which include email/profile directly
+    userinfo = oauth.google.parse_id_token(token, nonce=None) # Added nonce=None for typical setup
+
+    email = userinfo.get('email')
+    if not email:
+        flash('Could not retrieve email from Google.', 'danger')
+        return redirect(url_for('login'))
+
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        # NEW USER: Create a user account but force profile completion.
+        alumnus_role = Role.query.filter_by(name='Alumnus').first() 
+        if not alumnus_role: # Safety check if Role setup failed
+             flash('Application error: Default role not found.', 'danger')
+             return redirect(url_for('login'))
+             
+        # Use Google name or generate a default username
+        username = userinfo.get('name', email.split('@')[0]).replace(" ", "") # Remove spaces
+
+        new_user = User(
+            username=username, 
+            email=email,
+            role_id=alumnus_role.id
+        )
+        new_user.set_password('GOOGLE_OAUTH_USER_NO_PASSWORD') # Placeholder password
+        db.session.add(new_user)
+        try:
+            db.session.commit()
+            user = new_user # Assign the newly created user
+            flash('New account created via Google. Please complete your profile.', 'success')
+        except IntegrityError: # Handle potential username collision
+            db.session.rollback()
+            flash('Error creating account. Username might be taken.', 'danger')
+            return redirect(url_for('register_hub'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'An error occurred: {str(e)}', 'danger')
+            return redirect(url_for('login'))
+
+
+    login_user(user)
+    
+    # Force profile completion if needed
+    if user.alumni_profile is None or not user.alumni_profile.profile_complete:
+        flash('Successfully signed in with Google. Please complete your profile details.', 'warning')
+        return redirect(url_for('complete_profile'))
+        
+    flash('Login successful via Google!', 'success')
+    return redirect(url_for('home'))
