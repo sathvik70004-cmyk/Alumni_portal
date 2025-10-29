@@ -7,7 +7,7 @@ import os
 genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
 
 # Create the model
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-pro-2.5')
 
 # Context about the Alumni Portal
 ALUMNI_CONTEXT = """
