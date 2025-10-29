@@ -1,25 +1,22 @@
-# app/routes.py
+# app/routes.py (Full Code with ML Route Added)
 
-from flask import render_template, request, abort, redirect, url_for, flash, jsonify
+from flask import render_template, request, abort, redirect, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
 from . import app, db 
 from .utils import save_profile_picture 
-from .ml_utils import get_recommendations
+from .ml_utils import get_recommendations # CRITICAL IMPORT: ML utility
 from app.models import Alumni, Institute, Event, User, Role
 from app.forms import IndividualRegistrationForm, InstituteRegistrationForm, LoginForm, ProfileCompletionForm, AdminStudentRegistrationForm
 from datetime import datetime, timedelta 
 from sqlalchemy.exc import IntegrityError 
 
 # --- CRITICAL: Automatic Database Initialization and Data Insertion ---
-# This block runs BEFORE the first request to ensure tables exist and are populated.
 with app.app_context():
-    # Only create tables if the 'role' table (a key table) doesn't exist.
     if not db.engine.dialect.has_table(db.engine.connect(), "role"):
         print("Database setup running...")
         
         db.create_all()
         
-        # Insert initial data into the empty database
         role_admin = Role(name='Institute_Admin')
         role_alumnus = Role(name='Alumnus')
         role_student = Role(name='Student')
@@ -104,7 +101,7 @@ def alumni_profile(alumni_id):
     return render_template('profile.html', alumnus=alumnus, email_id=email_id)
 
 
-# --- AUTHENTICATION ROUTES ---
+# --- AUTHENTICATION ROUTES (No Change) ---
 
 @app.route('/register_hub')
 def register_hub():
@@ -274,10 +271,14 @@ def dashboard():
 @app.route('/recommendations')
 @login_required
 def recommendations():
+    """Fetches and displays top recommended alumni connections."""
+    
+    # 1. Ensure only Alumni/Students can use this
     if current_user.role.name not in ['Alumnus', 'Student']:
         flash('Feature unavailable for your user role.', 'info')
         return redirect(url_for('dashboard'))
 
+    # CRITICAL: Check for data availability
     if Alumni.query.count() < 2:
          flash('Not enough alumni data available to generate recommendations.', 'warning')
          return render_template('recommendations.html', recommended_alumni=[], title='Recommended Connections')
@@ -285,8 +286,10 @@ def recommendations():
 
     current_alumnus_id = current_user.alumni_id
     
+    # 2. Get recommended Alumni IDs using the ML utility
     recommended_ids = get_recommendations(current_alumnus_id, db.session)
     
+    # 3. Fetch the full Alumni objects for the recommended IDs
     recommended_alumni = Alumni.query.filter(Alumni.id.in_(recommended_ids)).all()
     
     return render_template('recommendations.html', 
@@ -348,6 +351,7 @@ def admin_register_student():
 @app.route('/login/google')
 def google_login():
     """Redirects the user to the Google OAuth login page."""
+    # CRITICAL: Imports the oauth object defined in __init__.py
     from . import oauth
     redirect_uri = url_for('google_auth', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)

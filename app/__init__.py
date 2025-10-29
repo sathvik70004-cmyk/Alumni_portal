@@ -43,3 +43,4 @@ def load_user(id):
 # 4. Import models and routes LAST
 from app import models
 from app import routes
+from app import chatbot  # Import chatbot routes
