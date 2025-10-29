@@ -14,11 +14,11 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
                 </a>
             </div>
+            <div class="menu-toggle">&#9776;</div>
             <ul>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('events_list') }}">Events</a></li>
                 <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
-
                 {% if current_user.is_authenticated %}
                     {% if current_user.role.name == 'Institute_Admin' %}
                         <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
@@ -47,59 +47,39 @@
                         </option>
                     {% endfor %}
                 </select>
-                <button type="submit" class="cta-button secondary submit-filter-button">Filter</button>
+                <button type="submit" class="cta-button secondary submit-filter-button" style="padding: 10px 15px;">Filter</button>
             </form>
             <br>
 
-            <h2>Showing Alumni for: {{ selected_year if selected_year and selected_year.isdigit() else 'All Years' }} ({{ alumni|length }} results)</h2>
+            <h2 style="text-align: center; margin-bottom: 30px;">
+                Showing Alumni for: {{ selected_year if selected_year and selected_year.isdigit() else 'All Years' }} ({{ alumni|length }} results)
+            </h2>
 
             {% if alumni %}
-            <table class="alumni-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Graduation Year</th>
-                        <th>Major</th>
-                        <th>Current City</th>
-                        <th>Phone</th>
-                        <th>LinkedIn ID</th>
-                        <th>Connect</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for alum in alumni %}
-                    <tr>
-                        <td>{{ alum.name }}</td>
-                        <td>{{ alum.graduation_year }}</td>
-                        <td>{{ alum.major }}</td>
-                        <td>{{ alum.city }}</td>
-                        <td>
-                            {% if current_user.is_authenticated %}
-                                {{ alum.phone_number }}
-                            {% else %}
-                                *Log in to view*
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if current_user.is_authenticated %}
-                                <a href="https://linkedin.com/in/{{ alum.linkedin_id }}" target="_blank">
-                                    View Profile
-                                </a>
-                            {% else %}
-                                *Log in to view*
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{{ url_for('alumni_profile', alumni_id=alum.id) }}" class="contact-button">
-                                Connect
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="alumni-grid">
+                {% for alum in alumni %}
+                <div class="alumni-card">
+                    <div class="alumni-photo-placeholder">
+                        <img src="{{ url_for('static', filename='images/' + alum.photo_file) }}" alt="{{ alum.name }} Photo">
+                    </div>
+                    <div class="alumni-info">
+                        <h3>{{ alum.name }}</h3>
+                        <p class="alumni-detail">Class of {{ alum.graduation_year }}</p>
+                        <p class="alumni-detail">{{ alum.major }}</p>
+                        <p class="alumni-location">📍 {{ alum.city }}</p>
+                    </div>
+                    <div class="alumni-actions">
+                         {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('alumni_profile', alumni_id=alum.id) }}" class="cta-button profile-button">View Profile</a>
+                         {% else %}
+                             <a href="{{ url_for('login', next=url_for('alumni_profile', alumni_id=alum.id)) }}" class="cta-button profile-button">Login to View</a>
+                         {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             {% else %}
-            <p>No alumni found for the selected year.</p>
+            <p style="text-align: center; font-size: 1.2em; margin-top: 40px;">No alumni found matching your criteria.</p>
             {% endif %}
 
         </section>
@@ -108,5 +88,16 @@
     <footer>
         <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
     </footer>
+
+     <script>
+        // Mobile Menu Toggle Javascript (keep this)
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navUl = document.querySelector('nav ul');
+        if (menuToggle && navUl) {
+            menuToggle.addEventListener('click', () => {
+                navUl.classList.toggle('active');
+            });
+        }
+    </script>
 </body>
 </html>

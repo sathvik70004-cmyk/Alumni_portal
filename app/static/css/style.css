@@ -1,7 +1,7 @@
 /* Basic Reset and Variables */
 :root {
-    --primary-color: #004d99; 
-    --secondary-color: #ffaa00; 
+    --primary-color: #004d99;
+    --secondary-color: #ffaa00;
     --light-bg: #f4f4f9;
     --text-color: #333;
 }
@@ -17,15 +17,15 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     background-color: #ffffff;
-    margin: 0; 
+    margin: 0;
     padding: 0;
-    /* NEW: Subtle animated gradient background */
+    /* Subtle animated gradient background */
     background: linear-gradient(-45deg, #e7f0f7, #ffffff, #e7f0f7, #ffffff);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
 }
 
-/* NEW: Keyframes for background animation */
+/* Keyframes for background animation */
 @keyframes gradientBG {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -39,7 +39,7 @@ header {
     padding: 10px 0;
     position: sticky; /* Sticky header */
     top: 0;
-    z-index: 1000; 
+    z-index: 1000;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -49,7 +49,7 @@ nav {
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0; 
+    padding: 0; /* No padding on nav itself */
 }
 
 /* Logo (Circular) */
@@ -57,16 +57,16 @@ nav {
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background-color: white; 
+    background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; 
-    margin-left: 10px;
+    overflow: hidden;
+    margin-left: 10px; /* Space from edge */
 }
 
 .logo a {
-    padding-left: 0; 
+    padding-left: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -75,9 +75,9 @@ nav {
 }
 
 .logo img {
-    height: 60px;
+    height: 60px; /* Logo size within circle */
     width: auto;
-    max-width: 90%; 
+    max-width: 90%;
     max-height: 90%;
     object-fit: contain;
 }
@@ -86,6 +86,7 @@ nav {
 nav ul {
     list-style: none;
     display: flex;
+    margin-right: 10px; /* Space before right edge */
 }
 
 nav ul li a {
@@ -93,8 +94,8 @@ nav ul li a {
     text-decoration: none;
     padding: 10px 15px;
     display: block;
-    position: relative; 
-    transition: color 0.3s ease; 
+    position: relative;
+    transition: color 0.3s ease;
 }
 
 nav ul li a::after {
@@ -102,40 +103,42 @@ nav ul li a::after {
     position: absolute;
     width: 0;
     height: 2px;
-    bottom: 5px; 
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: var(--secondary-color); 
-    transition: width 0.3s ease; 
+    background-color: var(--secondary-color);
+    transition: width 0.3s ease;
 }
 
 nav ul li a:hover {
-    color: var(--secondary-color); 
+    color: var(--secondary-color);
 }
 
 nav ul li a:hover::after {
-    width: 70%; 
+    width: 70%;
 }
 
 /* Login Button Styling */
 .login-button {
     background-color: var(--secondary-color);
     border-radius: 5px;
-    padding: 8px 15px !important; /* Ensure padding overrides */
+    padding: 8px 15px !important;
     margin-left: 10px;
-    margin-right: 20px; 
-    color: var(--primary-color); /* Initial text color */
-    transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease; 
-    text-decoration: none; /* Remove underline */
+    color: var(--primary-color);
+    transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+    text-decoration: none;
     display: inline-block;
+    border: none; /* Ensure button style */
+    cursor: pointer; /* Pointer for button */
+    font-weight: bold;
 }
 
 .login-button:hover {
     background-color: #e69500;
-    color: white; /* Text color change on hover */
-    transform: scale(1.05); 
+    color: white;
+    transform: scale(1.05);
 }
-.login-button::after { 
+.login-button::after { /* No underline effect */
     display: none;
 }
 
@@ -144,31 +147,37 @@ nav ul li a:hover::after {
     display: none;
     cursor: pointer;
     font-size: 24px;
-    padding: 10px 15px; /* Added padding */
-    color: white; /* Make icon visible */
-    margin-right: 10px; /* Spacing */
+    padding: 10px 15px;
+    color: white;
+    margin-right: 10px;
 }
 
-/* Main Content */
+/* Main Content Area */
 main {
     max-width: 1200px;
-    margin: 20px auto; /* Added top margin */
+    margin: 30px auto; /* Increased top/bottom margin */
     padding: 20px;
+    min-height: calc(100vh - 200px); /* Ensure main content pushes footer down */
 }
 
 section {
-    padding: 60px 0; /* Increased padding */
-    border-bottom: 1px solid #eee; /* Lighter border */
-    margin-bottom: 30px; /* Add space between sections */
+    padding: 60px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 40px; /* Increased space */
 }
-section:last-of-type { /* Remove border from the last section */
+section:last-of-type {
     border-bottom: none;
+    margin-bottom: 0; /* No margin for last section before footer */
 }
 
 h1, h2 {
     color: var(--primary-color);
-    margin-bottom: 25px; /* Increased margin */
-    text-align: center; /* Center section titles */
+    margin-bottom: 30px; /* Increased margin */
+    text-align: center;
+}
+h1.main-title { /* Specific style for main titles */
+    font-size: 2.5em;
+    margin-bottom: 40px;
 }
 
 /* Hero Section with Fade-In */
@@ -178,23 +187,24 @@ h1, h2 {
 }
 
 #hero {
-    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
+    background-color: rgba(255, 255, 255, 0.85); /* Slightly less transparent */
     text-align: center;
-    padding: 80px 30px; /* Increased padding */
-    border-radius: 12px; /* Smoother corners */
-    margin-bottom: 40px; /* Increased margin */
-    animation: fadeIn 1s ease-out forwards; 
+    padding: 80px 40px; /* More padding */
+    border-radius: 12px;
+    margin-bottom: 50px;
+    animation: fadeIn 1s ease-out forwards;
     border: 1px solid #ddd;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
 #hero h1 {
-    font-size: 2.8em; /* Larger heading */
-    margin-bottom: 15px;
+    font-size: 3em; /* Even larger heading */
+    margin-bottom: 20px;
 }
 
 #hero p {
-    font-size: 1.3em; /* Larger text */
-    margin-bottom: 35px; /* Increased margin */
+    font-size: 1.4em; /* Larger text */
+    margin-bottom: 40px;
     color: #555;
 }
 
@@ -206,53 +216,82 @@ h1, h2 {
 }
 
 #hero .cta-button {
-    padding: 15px 35px; /* Larger button */
+    padding: 15px 35px;
     font-size: 1.1em;
-    animation: pulse 2.5s infinite cubic-bezier(0.66, 0, 0, 1); 
+    animation: pulse 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #hero .cta-button:hover {
-    animation: none; 
-    transform: scale(1.05); 
+    animation: none;
+    transform: scale(1.05);
 }
 
-/* Events Section */
+/* Call-to-Action Buttons General Styling */
+.cta-button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none; /* Ensure button look */
+    cursor: pointer;
+}
+
+.cta-button:hover {
+    background-color: #003366;
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.cta-button.secondary {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.cta-button.secondary:hover {
+    background-color: #e69500;
+    color: white;
+}
+
+/* Events Section (Homepage) */
 #events {
-    display: block; 
-    padding: 60px 0; 
-    border-bottom: none; 
+    display: block;
+    padding: 60px 0;
+    border-bottom: none;
 }
 
 .events-wrapper {
     display: flex;
     flex-wrap: wrap;
-    gap: 25px; /* Increased gap */
-    background-color: transparent; /* Remove wrapper background */
-    padding: 0; /* Remove padding */
+    gap: 25px;
+    background-color: transparent;
+    padding: 0;
     border-radius: 0;
-    box-shadow: none; 
+    box-shadow: none;
     border: none;
 }
 
 .event-card {
     flex: 1;
     min-width: 300px;
-    background-color: white; /* Card background */
-    padding: 25px; /* Increased padding */
+    background-color: white;
+    padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Nicer shadow */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; 
-    border-left: 4px solid var(--secondary-color); /* Accent border */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid var(--secondary-color);
 }
 
 .event-card:hover {
-    transform: translateY(-8px); 
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12); 
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
 }
 
 .event-card h3 {
-    margin-bottom: 15px; /* Increased margin */
+    margin-bottom: 15px;
     color: var(--primary-color);
     font-size: 1.3em;
 }
@@ -276,7 +315,7 @@ h1, h2 {
 
 /* Job Board Section */
 #jobs {
-     border-bottom: none; /* Remove border if it's before the team section */
+     border-bottom: none;
 }
 #jobs ul {
     list-style: none;
@@ -284,43 +323,42 @@ h1, h2 {
 }
 
 #jobs ul li {
-    background-color: white; /* Card background */
-    padding: 20px; /* Increased padding */
-    margin-bottom: 15px; /* Increased margin */
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 15px;
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-    transition: background-color 0.3s ease, transform 0.2s ease; 
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #jobs ul li:hover {
-    background-color: var(--light-bg); 
-    transform: translateX(5px); /* Slight shift on hover */
+    background-color: var(--light-bg);
+    transform: translateX(5px);
 }
 
 .job-tag {
     background-color: var(--primary-color);
     color: white;
-    padding: 5px 10px; /* Increased padding */
+    padding: 5px 10px;
     border-radius: 4px;
     font-size: 0.8em;
     font-weight: bold;
-    margin-left: 10px; /* Space before tag */
+    margin-left: 10px;
 }
 
-/* --- NEW: Team Section Styling --- */
+/* Team Section Styling */
 #team {
-    padding-bottom: 80px; /* More space at the bottom */
-    border-bottom: none; /* Ensure no border above footer */
+    padding-bottom: 80px;
+    border-bottom: none;
 }
 
 .team-grid {
     display: grid;
-    /* Create 5 flexible columns */
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-    gap: 30px; /* Space between team members */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 30px;
     margin-top: 40px;
 }
 
@@ -342,14 +380,14 @@ h1, h2 {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background-color: #ccc; /* Placeholder color */
-    margin: 0 auto 15px auto; /* Center photo and add space below */
-    display: flex; 
+    background-color: #ccc;
+    margin: 0 auto 15px auto;
+    display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.8em;
     color: #666;
-    border: 3px solid var(--primary-color); /* Add a border */
+    border: 3px solid var(--primary-color);
 }
 
 .team-member h4 {
@@ -363,58 +401,193 @@ h1, h2 {
     color: #777;
 }
 
+/* --- Alumni Directory Card Layout Styling --- */
+#alumni-directory {
+    padding-bottom: 60px;
+}
+.alumni-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+.alumni-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 4px solid var(--primary-color);
+}
+.alumni-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+.alumni-photo-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #eee;
+    margin-bottom: 15px;
+    overflow: hidden;
+    border: 3px solid #ddd;
+}
+.alumni-photo-placeholder img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.alumni-info h3 { margin: 0 0 5px 0; color: var(--primary-color); font-size: 1.3em; }
+.alumni-detail { font-size: 0.95em; color: #555; margin-bottom: 3px; }
+.alumni-location { font-size: 0.9em; color: #777; margin-top: 8px; }
+.alumni-actions { margin-top: 20px; width: 100%; }
+.profile-button { padding: 10px 20px; width: 80%; max-width: 200px; display: inline-block; font-size: 0.9em; }
+
+/* Filter Form Styling */
+.filter-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 40px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+#year-select, .filter-form label {
+    font-size: 1.0em;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+#year-select { min-width: 150px; }
+
+
+/* --- Profile Page Styling --- */
+#alumni-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 60px;
+}
+.profile-card {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 800px;
+    background-color: white; /* Changed */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Stronger */
+    border: 1px solid #e0e0e0;
+    transition: transform 0.3s;
+}
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+.profile-photo {
+    flex-shrink: 0;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 30px;
+    margin-bottom: 20px; /* Space on mobile */
+    background-color: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid var(--primary-color);
+}
+.profile-photo img { width: 100%; height: 100%; object-fit: cover; }
+.profile-details { flex-grow: 1; }
+.profile-details h2 { color: var(--primary-color); margin-top: 0; margin-bottom: 10px; font-size: 2em; text-align: left; }
+.profile-details p { margin-bottom: 8px; font-size: 1.0em; color: #555; text-align: left; }
+.profile-details strong { color: var(--primary-color); }
+.profile-details hr { border: 0; border-top: 1px solid #ddd; margin: 15px 0; }
+
+/* --- Dedicated Events Page Styling --- */
+#full-events-list { padding-bottom: 60px; }
+#full-events-list .events-wrapper { flex-direction: column; }
+#full-events-list .event-card.full-card {
+    min-width: 100%; margin-bottom: 15px; padding: 25px;
+    background-color: white; border-left: 5px solid var(--secondary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.event-card.full-card h3 { color: var(--primary-color); margin-bottom: 5px; }
+.event-card.full-card .event-date, .event-card.full-card .event-location { font-size: 0.95em; margin-bottom: 5px; }
+.event-card.full-card .event-description { margin-top: 10px; color: #666; }
+
+/* --- Form Styling --- */
+.form-container {
+    max-width: 450px;
+    width: 100%;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 20px; /* Add margin for spacing */
+}
+.form-container h1 { text-align: center; margin-bottom: 25px; }
+.form-section { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+.form-section legend { font-size: 1.2em; font-weight: bold; color: var(--primary-color); padding: 0 5px; } /* Added padding */
+.form-control { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+.form-control-file { width: 100%; margin-top: 5px; margin-bottom: 10px; } /* Basic file input styling */
+.error { color: red; font-size: 0.85em; display: block; margin-top: -8px; margin-bottom: 10px; }
+.submit-button { width: 100%; margin-top: 15px; padding: 12px; }
+.login-prompt { text-align: center; margin-top: 20px; }
+/* Flash Messages */
+.flashes { padding: 10px; margin-bottom: 15px; border-radius: 5px; }
+.flash-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.flash-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.flash-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+.flash-info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
 /* Footer */
 footer {
     text-align: center;
-    padding: 30px 20px; /* Increased padding */
-    background-color: #333; /* Darker footer */
+    padding: 30px 20px;
+    background-color: #333;
     color: #ccc;
     font-size: 0.9em;
-    margin-top: 0; /* Removed top margin as section handles spacing */
+    margin-top: 0;
 }
 
-/* Responsive Layout (Media Query) */
+/* Responsive Layout */
 @media (max-width: 768px) {
-    /* Show the hamburger icon */
-    .menu-toggle {
-        display: block;
-    }
-    /* Hide the standard menu by default */
+    .menu-toggle { display: block; }
     nav ul {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 70px; /* Adjusted based on header height */
-        right: 0;
-        width: 100%;
-        background-color: var(--primary-color);
-        box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+        display: none; flex-direction: column; position: absolute;
+        top: 70px; right: 0; width: 100%;
+        background-color: var(--primary-color); box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
         z-index: 999;
     }
-    nav ul.active {
-        display: flex;
-    }
-    nav ul li {
-        text-align: center;
-        width: 100%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-     nav ul li:last-child {
-        border-bottom: none;
-    }
-    nav ul li a {
-        padding: 15px 0;
-    }
-    nav ul li a::after { /* Remove underline on mobile */
-        display: none;
-    }
+    nav ul.active { display: flex; }
+    nav ul li { text-align: center; width: 100%; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    nav ul li:last-child { border-bottom: none; }
+    nav ul li a { padding: 15px 0; }
+    nav ul li a::after { display: none; }
 
-    .team-grid {
-        /* Adjust columns for mobile */
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
-        gap: 15px;
-    }
-    
+    .team-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; }
+    .alumni-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .filter-form { flex-direction: column; gap: 10px; }
     #hero h1 { font-size: 2.2em; }
     #hero p { font-size: 1.1em; }
+    .profile-card { flex-direction: column; align-items: center; }
+    .profile-photo { margin-right: 0; }
+    .profile-details h2, .profile-details p { text-align: center; }
 }
+
+/* Specific Style for Modern Login Card */
+.modern-login-card {
+    max-width: 400px; width: 100%; padding: 40px 30px; background-color: white;
+    border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); text-align: center;
+}
+.modern-login-card h1 { color: var(--primary-color); font-size: 1.8em; margin-bottom: 30px; }
+.login-input { width: 100%; padding: 14px 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 1em; }
+.btn-google { background-color: #db4437; color: white !important; border: none; width: 100%; padding: 12px 0; margin-top: 10px; border-radius: 6px; font-weight: bold; display: block; text-decoration: none; }
+.btn-google:hover { background-color: #c03d32; }
