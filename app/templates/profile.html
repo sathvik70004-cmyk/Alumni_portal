@@ -18,8 +18,17 @@
                 <li><a href="{{ url_for('home') }}">Home</a></li> 
                 <li><a href="{{ url_for('events_list') }}">Events</a></li>
                 <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
-                <li><a href="#">Contact</a></li>
-                <li><a href="#" class="login-button">Login/Register</a></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role.name == 'Institute_Admin' %}
+                        <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('dashboard') }}">My Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
+                {% else %}
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+                {% endif %}
             </ul>
         </nav>
     </header>
