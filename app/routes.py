@@ -1,24 +1,22 @@
-# app/routes.py
+# app/routes.py (Full Code)
 
-from flask import render_template, request, abort, redirect, url_for, flash
+from flask import render_template, request, abort, redirect, url_for, flash, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from . import app, db 
-from .utils import save_profile_picture # NEW IMPORT: Utility for image saving
+from .utils import save_profile_picture 
+from .ml_utils import get_recommendations # NEW IMPORT: ML utility
 from app.models import Alumni, Institute, Event, User, Role
 from app.forms import IndividualRegistrationForm, InstituteRegistrationForm, LoginForm, ProfileCompletionForm, AdminStudentRegistrationForm
 from datetime import datetime, timedelta 
 from sqlalchemy.exc import IntegrityError 
 
 # --- CRITICAL: Automatic Database Initialization and Data Insertion ---
-# This block runs BEFORE the first request to ensure tables exist and are populated.
 with app.app_context():
-    # Only create tables if the 'role' table (a key table) doesn't exist.
     if not db.engine.dialect.has_table(db.engine.connect(), "role"):
         print("Database setup running...")
         
         db.create_all()
         
-        # Insert initial data into the empty database
         role_admin = Role(name='Institute_Admin')
         role_alumnus = Role(name='Alumnus')
         role_student = Role(name='Student')
@@ -103,7 +101,7 @@ def alumni_profile(alumni_id):
     return render_template('profile.html', alumnus=alumnus, email_id=email_id)
 
 
-# --- AUTHENTICATION ROUTES ---
+# --- AUTHENTICATION ROUTES (No Change) ---
 
 @app.route('/register_hub')
 def register_hub():
@@ -219,8 +217,6 @@ def logout():
     return redirect(url_for('home'))
 
 
-# --- PROFILE COMPLETION ROUTE (Handles Image Saving) ---
-
 @app.route('/complete_profile', methods=['GET', 'POST'])
 @login_required
 def complete_profile():
@@ -235,20 +231,18 @@ def complete_profile():
     form = ProfileCompletionForm()
 
     if form.validate_on_submit():
-        # CALL THE FILE SAVING FUNCTION
-        if form.photo.data:
-            alumni_id = current_user.alumni_profile.id
-            picture_file = save_profile_picture(form.photo.data, alumni_id)
-        else:
-            picture_file = 'default_user.png'
-            
         alumni = current_user.alumni_profile
         alumni.major = form.major.data
         alumni.city = form.city.data
         alumni.phone_number = form.phone_number.data
         alumni.linkedin_id = form.linkedin_id.data
         
-        # Store the filename in the database
+        if form.photo.data:
+            alumni_id = current_user.alumni_profile.id
+            picture_file = save_profile_picture(form.photo.data, alumni_id)
+        else:
+            picture_file = 'default_user.png'
+
         alumni.photo_file = picture_file 
         alumni.profile_complete = True 
 
@@ -264,6 +258,8 @@ def complete_profile():
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    """Renders the user's dashboard based on their role."""
+    
     if current_user.role.name in ['Alumnus', 'Student'] and not current_user.alumni_profile.profile_complete:
         return redirect(url_for('complete_profile'))
 
@@ -271,6 +267,35 @@ def dashboard():
         return render_template('dashboard_institute.html', title='Institute Dashboard')
     
     return render_template('dashboard_alumni.html', title='Alumni Dashboard') 
+
+
+@app.route('/recommendations')
+@login_required
+def recommendations():
+    """Fetches and displays top recommended alumni connections."""
+    
+    # 1. Ensure only Alumni/Students can use this
+    if current_user.role.name not in ['Alumnus', 'Student']:
+        flash('Feature unavailable for your user role.', 'info')
+        return redirect(url_for('dashboard'))
+
+    # CRITICAL: Check for data availability
+    if Alumni.query.count() < 2:
+         flash('Not enough alumni data available to generate recommendations.', 'warning')
+         return render_template('recommendations.html', recommended_alumni=[], title='Recommended Connections')
+
+
+    current_alumnus_id = current_user.alumni_id
+    
+    # 2. Get recommended Alumni IDs using the ML utility
+    recommended_ids = get_recommendations(current_alumnus_id, db.session)
+    
+    # 3. Fetch the full Alumni objects for the recommended IDs
+    recommended_alumni = Alumni.query.filter(Alumni.id.in_(recommended_ids)).all()
+    
+    return render_template('recommendations.html', 
+                           recommended_alumni=recommended_alumni, 
+                           title='Recommended Connections')
 
 
 @app.route('/admin/register_student', methods=['GET', 'POST'])
