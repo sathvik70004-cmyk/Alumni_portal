@@ -1,22 +1,25 @@
-# app/routes.py (Full Code)
+# app/routes.py
 
 from flask import render_template, request, abort, redirect, url_for, flash, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from . import app, db 
 from .utils import save_profile_picture 
-from .ml_utils import get_recommendations # NEW IMPORT: ML utility
+from .ml_utils import get_recommendations
 from app.models import Alumni, Institute, Event, User, Role
 from app.forms import IndividualRegistrationForm, InstituteRegistrationForm, LoginForm, ProfileCompletionForm, AdminStudentRegistrationForm
 from datetime import datetime, timedelta 
 from sqlalchemy.exc import IntegrityError 
 
 # --- CRITICAL: Automatic Database Initialization and Data Insertion ---
+# This block runs BEFORE the first request to ensure tables exist and are populated.
 with app.app_context():
+    # Only create tables if the 'role' table (a key table) doesn't exist.
     if not db.engine.dialect.has_table(db.engine.connect(), "role"):
         print("Database setup running...")
         
         db.create_all()
         
+        # Insert initial data into the empty database
         role_admin = Role(name='Institute_Admin')
         role_alumnus = Role(name='Alumnus')
         role_student = Role(name='Student')
@@ -101,7 +104,7 @@ def alumni_profile(alumni_id):
     return render_template('profile.html', alumnus=alumnus, email_id=email_id)
 
 
-# --- AUTHENTICATION ROUTES (No Change) ---
+# --- AUTHENTICATION ROUTES ---
 
 @app.route('/register_hub')
 def register_hub():
@@ -231,11 +234,6 @@ def complete_profile():
     form = ProfileCompletionForm()
 
     if form.validate_on_submit():
-        alumni = current_user.alumni_profile
-        alumni.major = form.major.data
-        alumni.city = form.city.data
-        alumni.phone_number = form.phone_number.data
-        alumni.linkedin_id = form.linkedin_id.data
         
         if form.photo.data:
             alumni_id = current_user.alumni_profile.id
@@ -243,6 +241,12 @@ def complete_profile():
         else:
             picture_file = 'default_user.png'
 
+        alumni = current_user.alumni_profile
+        alumni.major = form.major.data
+        alumni.city = form.city.data
+        alumni.phone_number = form.phone_number.data
+        alumni.linkedin_id = form.linkedin_id.data
+        
         alumni.photo_file = picture_file 
         alumni.profile_complete = True 
 
@@ -258,8 +262,6 @@ def complete_profile():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    """Renders the user's dashboard based on their role."""
-    
     if current_user.role.name in ['Alumnus', 'Student'] and not current_user.alumni_profile.profile_complete:
         return redirect(url_for('complete_profile'))
 
@@ -272,14 +274,10 @@ def dashboard():
 @app.route('/recommendations')
 @login_required
 def recommendations():
-    """Fetches and displays top recommended alumni connections."""
-    
-    # 1. Ensure only Alumni/Students can use this
     if current_user.role.name not in ['Alumnus', 'Student']:
         flash('Feature unavailable for your user role.', 'info')
         return redirect(url_for('dashboard'))
 
-    # CRITICAL: Check for data availability
     if Alumni.query.count() < 2:
          flash('Not enough alumni data available to generate recommendations.', 'warning')
          return render_template('recommendations.html', recommended_alumni=[], title='Recommended Connections')
@@ -287,10 +285,8 @@ def recommendations():
 
     current_alumnus_id = current_user.alumni_id
     
-    # 2. Get recommended Alumni IDs using the ML utility
     recommended_ids = get_recommendations(current_alumnus_id, db.session)
     
-    # 3. Fetch the full Alumni objects for the recommended IDs
     recommended_alumni = Alumni.query.filter(Alumni.id.in_(recommended_ids)).all()
     
     return render_template('recommendations.html', 
@@ -347,14 +343,11 @@ def admin_register_student():
 
     return render_template('admin_register_student.html', title='Register New Student', form=form)
 
-# app/routes.py (Add this section to the end of the file)
-
 # --- GOOGLE OAUTH ROUTES (RESTORED) ---
 
 @app.route('/login/google')
 def google_login():
     """Redirects the user to the Google OAuth login page."""
-    # CRITICAL: Imports the oauth object defined in __init__.py
     from . import oauth
     redirect_uri = url_for('google_auth', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
@@ -364,9 +357,13 @@ def google_login():
 def google_auth():
     """Handles the response (token) from Google after user signs in."""
     from . import oauth
-    token = oauth.google.authorize_access_token()
-    # Use parse_id_token for OpenID Connect flows which include email/profile directly
-    userinfo = oauth.google.parse_id_token(token, nonce=None) # Added nonce=None for typical setup
+    
+    try:
+        token = oauth.google.authorize_access_token()
+        userinfo = oauth.google.parse_id_token(token, nonce=None) 
+    except Exception as e:
+        flash(f'Google sign-in failed. Please try logging in normally. Error: {str(e)}', 'danger')
+        return redirect(url_for('login'))
 
     email = userinfo.get('email')
     if not email:
@@ -377,32 +374,45 @@ def google_auth():
 
     if user is None:
         # NEW USER: Create a user account but force profile completion.
-        alumnus_role = Role.query.filter_by(name='Alumnus').first() 
-        if not alumnus_role: # Safety check if Role setup failed
-             flash('Application error: Default role not found.', 'danger')
-             return redirect(url_for('login'))
-             
-        # Use Google name or generate a default username
-        username = userinfo.get('name', email.split('@')[0]).replace(" ", "") # Remove spaces
-
-        new_user = User(
-            username=username, 
-            email=email,
-            role_id=alumnus_role.id
-        )
-        new_user.set_password('GOOGLE_OAUTH_USER_NO_PASSWORD') # Placeholder password
-        db.session.add(new_user)
         try:
+            alumnus_role = Role.query.filter_by(name='Alumnus').first() 
+            main_institute = Institute.query.get(1)
+
+            if not alumnus_role or not main_institute:
+                flash('Application error: Critical setup data (Role/Institute) is missing.', 'danger')
+                return redirect(url_for('login'))
+                
+            username = userinfo.get('name', email.split('@')[0]).replace(" ", "") 
+
+            # Create Alumni Profile record
+            new_alumni_profile = Alumni(
+                name=userinfo.get('name', 'Google User'),
+                graduation_year=datetime.now().year, 
+                institute_id=main_institute.id, 
+                profile_complete=False 
+            )
+            
+            # Create User record and link it
+            user = User(
+                username=username, 
+                email=email,
+                role_id=alumnus_role.id,
+                institute_id=main_institute.id,
+                alumni_profile=new_alumni_profile 
+            )
+            user.set_password('GOOGLE_OAUTH_USER_NO_PASSWORD') 
+            
+            db.session.add_all([user, new_alumni_profile])
             db.session.commit()
-            user = new_user # Assign the newly created user
             flash('New account created via Google. Please complete your profile.', 'success')
-        except IntegrityError: # Handle potential username collision
+
+        except IntegrityError: 
             db.session.rollback()
-            flash('Error creating account. Username might be taken.', 'danger')
-            return redirect(url_for('register_hub'))
+            flash('Error: This email is already linked to an account.', 'danger')
+            return redirect(url_for('login'))
         except Exception as e:
             db.session.rollback()
-            flash(f'An error occurred: {str(e)}', 'danger')
+            flash(f'An unexpected error occurred during creation: {str(e)}', 'danger')
             return redirect(url_for('login'))
 
 
