@@ -6,7 +6,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     # This is a placeholder secret key; change it for production!
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'A_VERY_LONG_PRODUCTION_SECRET_KEY'
+    SECRET_KEY = os.environ.get('GEMINI_SECRET_KEY')
     DEBUG = True # Keep True for local dev, Render will override if needed
     TESTING = False
     
