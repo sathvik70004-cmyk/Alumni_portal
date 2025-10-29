@@ -17,12 +17,7 @@
             <ul>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('events_list') }}">Events</a></li>
-<<<<<<< HEAD
-                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
-=======
                 <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
-
->>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
                 {% if current_user.is_authenticated %}
                     {% if current_user.role.name == 'Institute_Admin' %}
                         <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
@@ -31,12 +26,7 @@
                     {% endif %}
                     <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
                 {% else %}
-<<<<<<< HEAD
-                    <li><a href="#">Contact</a></li>
                     <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
-=======
-                    <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
->>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
                 {% endif %}
             </ul>
         </nav>

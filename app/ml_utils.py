@@ -3,7 +3,6 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-<<<<<<< HEAD
 # CRITICAL FIX: Import the model here (assuming models.py is imported in __init__.py)
 # For reliability, we access the model directly. 
 # NOTE: This file must be executed within Flask's app context where db is defined.
@@ -68,7 +67,6 @@ def get_recommendations(current_alumnus_id, db_session):
     sim_scores = sim_scores[1:6] 
     
     # Get the Alumni IDs corresponding to the top recommendations
-=======
 # CRITICAL: We import the Alumni model here for database access
 from app.models import Alumni 
 
@@ -116,7 +114,6 @@ def get_recommendations(current_alumnus_id, db_session):
     # Select the top 5 (excluding the user themselves, which is the first entry)
     sim_scores = sim_scores[1:6] 
     
->>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
     alumni_indices = [i[0] for i in sim_scores]
     
     # Return the list of recommended Alumni IDs

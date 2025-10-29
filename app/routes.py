@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-# app/routes.py (Full Code)
-=======
 # app/routes.py (Full Code with ML Route Added)
->>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
 
 from flask import render_template, request, abort, redirect, url_for, flash, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from . import app, db 
 from .utils import save_profile_picture 
-<<<<<<< HEAD
-from .ml_utils import get_recommendations # NEW IMPORT: ML utility
-=======
-from .ml_utils import get_recommendations # CRITICAL IMPORT: ML utility
->>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
+from .ml_utils import get_recommendations # ML utility for recommendations
 from app.models import Alumni, Institute, Event, User, Role
 from app.forms import IndividualRegistrationForm, InstituteRegistrationForm, LoginForm, ProfileCompletionForm, AdminStudentRegistrationForm
 from datetime import datetime, timedelta 
@@ -239,31 +231,19 @@ def complete_profile():
     form = ProfileCompletionForm()
 
     if form.validate_on_submit():
-<<<<<<< HEAD
-=======
-        
+        # Handle photo upload first
         if form.photo.data:
             alumni_id = current_user.alumni_profile.id
             picture_file = save_profile_picture(form.photo.data, alumni_id)
         else:
             picture_file = 'default_user.png'
 
->>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
+        # Update alumni profile
         alumni = current_user.alumni_profile
         alumni.major = form.major.data
         alumni.city = form.city.data
         alumni.phone_number = form.phone_number.data
         alumni.linkedin_id = form.linkedin_id.data
-        
-<<<<<<< HEAD
-        if form.photo.data:
-            alumni_id = current_user.alumni_profile.id
-            picture_file = save_profile_picture(form.photo.data, alumni_id)
-        else:
-            picture_file = 'default_user.png'
-
-=======
->>>>>>> 29199c6db40ba558fe0aac2b8470e535c428aaaa
         alumni.photo_file = picture_file 
         alumni.profile_complete = True 
 
