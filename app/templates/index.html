@@ -14,10 +14,12 @@
                     <img src="{{ url_for('static', filename='images/' + (institute_logo if institute_logo else 'logo.png')) }}" alt="Institute Logo">
                 </a>
             </div>
+            <div class="menu-toggle">&#9776;</div> 
+            
             <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('events_list') }}">Events</a></li>
-                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
+                <li><a href="{{ url_for('home') }}">Home</a></li> 
+                <li><a href="{{ url_for('events_list') }}">Events</a></li> 
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
 
                 {% if current_user.is_authenticated %}
                     {% if current_user.role.name == 'Institute_Admin' %}
@@ -27,7 +29,7 @@
                     {% endif %}
                     <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
                 {% else %}
-                    <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
+                    <li><a href="#">Contact</a></li> <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -41,8 +43,8 @@
         </section>
 
         <section id="events">
-            <div class="events-wrapper">
-                <h2>Upcoming Events</h2>
+            <h2>Upcoming Events</h2>
+            <div class="events-wrapper"> 
                 {% for event in events %}
                 <div class="event-card">
                     <h3>{{ event.title }}</h3>
@@ -50,7 +52,7 @@
                     <a href="#">Details & RSVP</a>
                 </div>
                 {% else %}
-                <p style="text-align: center; width: 100%;">No upcoming events scheduled at this time. Check back soon!</p>
+                <p style="text-align: center; width: 100%;">No upcoming events scheduled at this time.</p>
                 {% endfor %}
             </div>
         </section>
@@ -64,10 +66,51 @@
             </ul>
             <a href="#" class="cta-button secondary">View All Listings</a>
         </section>
+
+        <section id="team">
+            <h2>Meet the Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="team-member-photo"></div> <h4>Teammate 1 Name</h4>
+                    <p>Role/Title</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-member-photo"></div>
+                    <h4>Teammate 2 Name</h4>
+                    <p>Role/Title</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-member-photo"></div>
+                    <h4>Teammate 3 Name</h4>
+                    <p>Role/Title</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-member-photo"></div>
+                    <h4>Teammate 4 Name</h4>
+                    <p>Role/Title</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-member-photo"></div>
+                    <h4>Teammate 5 Name</h4>
+                    <p>Role/Title</p>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <footer>
         <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
     </footer>
+
+    <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navUl = document.querySelector('nav ul');
+        if (menuToggle && navUl) {
+            menuToggle.addEventListener('click', () => {
+                navUl.classList.toggle('active');
+            });
+        }
+    </script>
 </body>
 </html>
