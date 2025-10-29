@@ -15,11 +15,20 @@
                 </a>
             </div>
             <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li> 
+                <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('events_list') }}">Events</a></li>
                 <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role.name == 'Institute_Admin' %}
+                        <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('dashboard') }}">My Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
+                {% endif %}
             </ul>
         </nav>
     </header>
@@ -41,9 +50,9 @@
                 <button type="submit" class="cta-button secondary submit-filter-button">Filter</button>
             </form>
             <br>
-            
+
             <h2>Showing Alumni for: {{ selected_year if selected_year and selected_year.isdigit() else 'All Years' }} ({{ alumni|length }} results)</h2>
-            
+
             {% if alumni %}
             <table class="alumni-table">
                 <thead>
@@ -64,11 +73,21 @@
                         <td>{{ alum.graduation_year }}</td>
                         <td>{{ alum.major }}</td>
                         <td>{{ alum.city }}</td>
-                        <td>{{ alum.phone_number }}</td>
                         <td>
-                            <a href="https://linkedin.com/in/{{ alum.linkedin_id }}" target="_blank">
-                                View Profile
-                            </a>
+                            {% if current_user.is_authenticated %}
+                                {{ alum.phone_number }}
+                            {% else %}
+                                *Log in to view*
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if current_user.is_authenticated %}
+                                <a href="https://linkedin.com/in/{{ alum.linkedin_id }}" target="_blank">
+                                    View Profile
+                                </a>
+                            {% else %}
+                                *Log in to view*
+                            {% endif %}
                         </td>
                         <td>
                             <a href="{{ url_for('alumni_profile', alumni_id=alum.id) }}" class="contact-button">
@@ -82,12 +101,12 @@
             {% else %}
             <p>No alumni found for the selected year.</p>
             {% endif %}
-            
+
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+        <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
     </footer>
 </body>
 </html>

@@ -15,9 +15,10 @@
                 </a>
             </div>
             <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li> 
-                <li><a href="{{ url_for('events_list') }}">Events</a></li> 
-                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('events_list') }}">Events</a></li>
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
+
                 {% if current_user.is_authenticated %}
                     {% if current_user.role.name == 'Institute_Admin' %}
                         <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
@@ -26,8 +27,7 @@
                     {% endif %}
                     <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
                 {% else %}
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+                    <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -37,16 +37,14 @@
         <h1 class="main-title" style="margin-top: 50px; color: var(--secondary-color);">INSTITUTE ADMINISTRATION PANEL</h1>
         <h2 style="text-align: center;">Welcome, Admin {{ current_user.username }} of {{ current_user.institute.name }}</h2>
         <p style="text-align: center; font-size: 1.1em; margin-bottom: 30px;">Use the links below to manage students and events.</p>
-        
+
         <div style="display: flex; gap: 20px;">
             <a href="{{ url_for('admin_register_student') }}" class="cta-button">Register New Student/Alumni</a>
-            
-            <a href="{{ url_for('create_event') }}" class="cta-button secondary">Create New Event</a>
-        </div>
+            <a href="#" class="cta-button secondary">Create New Event</a> </div>
     </main>
 
     <footer>
-        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+        <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
     </footer>
 </body>
 </html>

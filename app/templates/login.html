@@ -6,7 +6,6 @@
     <title>User Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        /* Specific CSS for the clean, centered card design */
         .modern-login-card {
             max-width: 400px;
             width: 100%;
@@ -17,8 +16,8 @@
             text-align: center;
         }
         .modern-login-card h1 {
-            color: var(--primary-color); 
-            font-size: 1.8em; 
+            color: var(--primary-color);
+            font-size: 1.8em;
             margin-bottom: 30px;
         }
         .login-input {
@@ -30,7 +29,7 @@
             font-size: 1em;
         }
         .btn-google {
-            background-color: #db4437; /* Google Red */
+            background-color: #db4437;
             color: white !important;
             border: none;
             width: 100%;
@@ -55,11 +54,20 @@
                 </a>
             </div>
             <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li> 
-                <li><a href="{{ url_for('events_list') }}">Events</a></li> 
-                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li> 
-                <li><a href="#">Contact</a></li>
-                <li><a href="{{ url_for('register_hub') }}" class="login-button">Login/Register</a></li>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('events_list') }}">Events</a></li>
+                <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
+
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role.name == 'Institute_Admin' %}
+                        <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('dashboard') }}">My Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
+                {% endif %}
             </ul>
         </nav>
     </header>
@@ -67,9 +75,8 @@
     <main>
         <section id="login-form" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
             <div class="modern-login-card">
-                
                 <h1 style="color: var(--primary-color); font-size: 1.8em; margin-bottom: 30px;">Alumni Sign In</h1>
-                
+
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         <div class="flashes" style="margin-bottom: 20px;">
@@ -81,22 +88,18 @@
                 {% endwith %}
 
                 <form method="POST" action="{{ url_for('login') }}">
-                    {{ form.hidden_tag() }} 
-                    
+                    {{ form.hidden_tag() }}
                     <fieldset class="form-section" style="border: none; padding: 0;">
                         <p>{{ form.username_or_email(class="login-input", placeholder="Email or Username", required=true) }}</p>
-                        
                         <p>{{ form.password(class="login-input", placeholder="Password", required=true) }}</p>
-                        
                         <p>{{ form.submit(class="cta-button submit-button", style="width: 100%; padding: 12px; font-size: 1.1em; margin-top: 5px; background-color: var(--primary-color);") }}</p>
                     </fieldset>
                 </form>
 
-                <p style="font-size: 0.9em; margin: 15px 0;">Forgot Password?</p> 
+                <p style="font-size: 0.9em; margin: 15px 0;">Forgot Password?</p>
 
                 <div style="margin-top: 25px;">
                     <p style="margin-bottom: 10px; color: #777;">— OR —</p>
-                    
                     <a href="{{ url_for('google_login') }}" class="btn-google">
                         Sign In with Google
                     </a>
@@ -110,7 +113,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 Alumni Network | Privacy Policy | Connect with us.</p>
+        <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
     </footer>
 </body>
 </html>
