@@ -347,6 +347,8 @@ def admin_register_student():
 
     return render_template('admin_register_student.html', title='Register New Student', form=form)
 
+# app/routes.py (Add this section to the end of the file)
+
 # --- GOOGLE OAUTH ROUTES (RESTORED) ---
 
 @app.route('/login/google')
