@@ -494,7 +494,7 @@ def chatbot_api():
     try:
         genai.configure(api_key=api_key)
         # --- CRITICAL FIX: Use the correct, stable model name ---
-        model = genai.GenerativeModel('gemini-1.0-pro') 
+        model = genai.GenerativeModel('gemini-pro') 
     except Exception as e:
         app.logger.error(f"Failed to configure Gemini model: {e}")
         return jsonify({'reply': 'Sorry, chatbot configuration error.'}), 500
