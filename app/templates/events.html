@@ -14,11 +14,11 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
                 </a>
             </div>
+            <div class="menu-toggle">&#9776;</div>
              <ul>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('events_list') }}">Events</a></li>
                 <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
-
                 {% if current_user.is_authenticated %}
                     {% if current_user.role.name == 'Institute_Admin' %}
                         <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
@@ -63,5 +63,15 @@
     <footer>
         <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
     </footer>
+
+     <script>
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navUl = document.querySelector('nav ul');
+        if (menuToggle && navUl) {
+            menuToggle.addEventListener('click', () => {
+                navUl.classList.toggle('active');
+            });
+        }
+    </script>
 </body>
 </html>

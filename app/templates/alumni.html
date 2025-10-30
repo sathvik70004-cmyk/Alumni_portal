@@ -59,14 +59,11 @@
             <div class="alumni-grid">
                 {% for alum in alumni %}
                 <div class="alumni-card">
-                    <div class="alumni-photo-placeholder">
-                        <img src="{{ url_for('static', filename='images/' + alum.photo_file) }}" alt="{{ alum.name }} Photo">
-                    </div>
                     <div class="alumni-info">
                         <h3>{{ alum.name }}</h3>
                         <p class="alumni-detail">Class of {{ alum.graduation_year }}</p>
-                        <p class="alumni-detail">{{ alum.major }}</p>
-                        <p class="alumni-location">📍 {{ alum.city }}</p>
+                        <p class="alumni-detail">{{ alum.major if alum.major else 'Major Not Specified' }}</p>
+                        <p class="alumni-location">📍 {{ alum.city if alum.city else 'Location Not Specified' }}</p>
                     </div>
                     <div class="alumni-actions">
                          {% if current_user.is_authenticated %}
@@ -90,7 +87,6 @@
     </footer>
 
      <script>
-        // Mobile Menu Toggle Javascript (keep this)
         const menuToggle = document.querySelector('.menu-toggle');
         const navUl = document.querySelector('nav ul');
         if (menuToggle && navUl) {
