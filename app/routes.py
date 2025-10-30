@@ -2,7 +2,7 @@
 
 from flask import render_template, request, abort, redirect, url_for, flash, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
-from . import app, db, oauth 
+from . import app, db, oauth # Import oauth
 from .utils import save_profile_picture 
 from .ml_utils import get_recommendations
 from app.models import Alumni, Institute, Event, User, Role
@@ -17,8 +17,10 @@ import os
 import traceback 
 
 # --- CRITICAL: Automatic Database Initialization and Data Insertion ---
+# This block runs BEFORE the first request to ensure tables exist and are populated.
 with app.app_context():
     try:
+        # Check if a key table (like 'role') exists. If not, set up the DB.
         if not db.engine.dialect.has_table(db.engine.connect(), "role"):
             print("--- Database setup running (tables not found) ---")
             
@@ -29,14 +31,14 @@ with app.app_context():
             role_alumnus = Role(name='Alumnus')
             role_student = Role(name='Student')
             db.session.add_all([role_admin, role_alumnus, role_student])
-            db.session.commit()
+            db.session.commit() # Commit roles to get their IDs
 
             admin_role_id = role_admin.id
             alumnus_role_id = role_alumnus.id
 
             main_institute = Institute(name='Main University', logo_path='logo.png')
             db.session.add(main_institute)
-            db.session.flush() 
+            db.session.flush() # Flush to get main_institute.id before committing
             main_institute_id = main_institute.id
 
             admin_user = User(
@@ -63,7 +65,8 @@ with app.app_context():
             db.session.commit()
             print("--- LIVE DATABASE SCHEMA AND DATA SUCCESSFULLY CREATED ON STARTUP ---")
     except Exception as e:
-        print(f"--- Database setup failed (may already exist or error): {e} ---")
+        # This catch is important so the app can start even if DB is already set up
+        print(f"--- Database setup skipped (may already exist) or failed: {e} ---")
         db.session.rollback()
 
 
@@ -71,7 +74,8 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    institute = db.session.get(Institute, 1)
+    # Use .get() for a safe query that returns None if ID 1 doesn't exist yet
+    institute = db.session.get(Institute, 1) 
     logo_path = institute.logo_path if institute else 'logo.png' 
     upcoming_events = []
     if institute:
@@ -112,6 +116,7 @@ def alumni_profile(alumni_id):
     alumnus = db.session.get(Alumni, alumni_id)
     if alumnus is None:
         abort(404)
+    # Generate placeholder email if user has no direct email yet
     user_email = alumnus.user.email if alumnus.user else f"{alumnus.linkedin_id or 'alumnus'}@example.com"
     return render_template('profile.html', alumnus=alumnus, email_id=user_email)
 
@@ -143,7 +148,7 @@ def register_individual():
             new_alumni_profile = Alumni(
                 name=form.name.data,
                 graduation_year=form.graduation_year.data,
-                institute_id=1 
+                institute_id=1 # Assume Institute 1
             )
             
             user.alumni_profile = new_alumni_profile 
@@ -247,6 +252,7 @@ def logout():
 # --- GOOGLE OAUTH ROUTES ---
 @app.route('/login/google')
 def google_login():
+    """Redirects the user to the Google OAuth login page."""
     redirect_uri = url_for('google_auth', _external=True)
     if not hasattr(oauth, 'google'):
         flash('Google OAuth not configured correctly.', 'danger')
@@ -255,9 +261,11 @@ def google_login():
 
 @app.route('/login/google/authorized')
 def google_auth():
+    """Handles the response (token) from Google after user signs in."""
     if not hasattr(oauth, 'google'):
         flash('Google OAuth setup error.', 'danger')
         return redirect(url_for('login'))
+        
     try:
         token = oauth.google.authorize_access_token()
         userinfo = oauth.google.parse_id_token(token, nonce=None) 
@@ -332,15 +340,18 @@ def google_auth():
     flash('Login successful via Google!', 'success')
     return redirect(url_for('home'))
 
+
 # --- PROFILE COMPLETION & DASHBOARD ---
 @app.route('/complete_profile', methods=['GET', 'POST'])
 @login_required
 def complete_profile():
     if current_user.role.name not in ['Alumnus', 'Student']: return redirect(url_for('dashboard'))
     
+    # Safety check: Create profile if it's missing (e.g., for Google user)
     if not current_user.alumni_profile: 
         try:
             main_institute = Institute.query.get(1)
+            if not main_institute: raise Exception("Main institute not found.")
             new_alumni_profile = Alumni(
                 name=current_user.username, 
                 graduation_year=datetime.now().year, 
@@ -463,7 +474,7 @@ def admin_register_student():
 @app.route('/admin/create_event', methods=['GET', 'POST'])
 @login_required
 def create_event():
-    if current_user.role.name != 'Institute_Admin': abort(403)
+    if current_user.role.name != 'Institute_Admin': abort(4H03)
     form = EventForm()
     if form.validate_on_submit():
         try:
@@ -486,6 +497,7 @@ def create_event():
 # --- CHATBOT API ---
 @app.route('/api/chatbot', methods=['POST'])
 def chatbot_api():
+    # SECURE: Read key from app config (set by Render environment variable)
     api_key = app.config.get('GEMINI_API_KEY')
     if not api_key or api_key == 'YOUR_LOCAL_GEMINI_API_KEY_HERE':
         app.logger.error("Gemini API Key is not configured.")
@@ -493,8 +505,7 @@ def chatbot_api():
 
     try:
         genai.configure(api_key=api_key)
-        # --- CRITICAL FIX: Use the correct, stable model name ---
-        model = genai.GenerativeModel('gemini-pro') 
+        model = genai.GenerativeModel('gemini-1.0-pro') # Use stable model name
     except Exception as e:
         app.logger.error(f"Failed to configure Gemini model: {e}")
         return jsonify({'reply': 'Sorry, chatbot configuration error.'}), 500
@@ -511,7 +522,7 @@ def chatbot_api():
         app.logger.error(f"Gemini API call failed: {e}")
         try:
             # Check for safety blocks
-            if response and response.prompt_feedback and response.prompt_feedback.block_reason:
+            if response and hasattr(response, 'prompt_feedback') and response.prompt_feedback.block_reason:
                 bot_reply = "I'm sorry, I can't respond to that due to my safety settings."
             else:
                 bot_reply = "Sorry, I encountered an error. Please try again."
@@ -520,7 +531,7 @@ def chatbot_api():
              
     return jsonify({'reply': bot_reply})
 
-# --- ERROR HANDLERS (Optional but good practice) ---
+# --- ERROR HANDLERS ---
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404
