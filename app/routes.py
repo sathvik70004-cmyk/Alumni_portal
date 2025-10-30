@@ -2,7 +2,7 @@
 
 from flask import render_template, request, abort, redirect, url_for, flash, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
-from . import app, db, oauth # Import oauth
+from . import app, db, oauth 
 from .utils import save_profile_picture 
 from .ml_utils import get_recommendations
 from app.models import Alumni, Institute, Event, User, Role
@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.exc import IntegrityError
 import google.generativeai as genai
 import os
-import traceback # For logging errors
+import traceback 
 
 # --- CRITICAL: Automatic Database Initialization and Data Insertion ---
 with app.app_context():
@@ -36,7 +36,7 @@ with app.app_context():
 
             main_institute = Institute(name='Main University', logo_path='logo.png')
             db.session.add(main_institute)
-            db.session.flush() # Flush to get main_institute.id
+            db.session.flush() 
             main_institute_id = main_institute.id
 
             admin_user = User(
@@ -112,7 +112,6 @@ def alumni_profile(alumni_id):
     alumnus = db.session.get(Alumni, alumni_id)
     if alumnus is None:
         abort(404)
-    # Generate placeholder email if user has no direct email yet
     user_email = alumnus.user.email if alumnus.user else f"{alumnus.linkedin_id or 'alumnus'}@example.com"
     return render_template('profile.html', alumnus=alumnus, email_id=user_email)
 
@@ -144,7 +143,7 @@ def register_individual():
             new_alumni_profile = Alumni(
                 name=form.name.data,
                 graduation_year=form.graduation_year.data,
-                institute_id=1 # Assume Institute 1
+                institute_id=1 
             )
             
             user.alumni_profile = new_alumni_profile 
@@ -246,24 +245,19 @@ def logout():
 
 
 # --- GOOGLE OAUTH ROUTES ---
-
 @app.route('/login/google')
 def google_login():
-    """Redirects the user to the Google OAuth login page."""
     redirect_uri = url_for('google_auth', _external=True)
     if not hasattr(oauth, 'google'):
         flash('Google OAuth not configured correctly.', 'danger')
         return redirect(url_for('login'))
     return oauth.google.authorize_redirect(redirect_uri)
 
-
 @app.route('/login/google/authorized')
 def google_auth():
-    """Handles the response (token) from Google after user signs in."""
     if not hasattr(oauth, 'google'):
         flash('Google OAuth setup error.', 'danger')
         return redirect(url_for('login'))
-        
     try:
         token = oauth.google.authorize_access_token()
         userinfo = oauth.google.parse_id_token(token, nonce=None) 
@@ -286,7 +280,6 @@ def google_auth():
             if not alumnus_role or not main_institute: raise Exception("Core Role/Institute data missing")
                 
             username = userinfo.get('name', email.split('@')[0]).replace(" ", "")
-            # Ensure unique username generation
             temp_username = username
             counter = 1
             while User.query.filter_by(username=temp_username).first():
@@ -316,7 +309,7 @@ def google_auth():
 
         except IntegrityError: 
             db.session.rollback()
-            user = User.query.filter_by(email=email).first() # Try fetching again
+            user = User.query.filter_by(email=email).first() 
             if not user:
                 flash('Error creating account. Username might be taken.', 'danger')
                 return redirect(url_for('register_hub'))
@@ -328,9 +321,9 @@ def google_auth():
 
     login_user(user)
     
-    if user.alumni_profile is None: # Safety check if OAuth user has no profile
+    if user.alumni_profile is None: 
         flash('Account error: Profile not found. Please complete registration.', 'danger')
-        return redirect(url_for('complete_profile')) # Force creation
+        return redirect(url_for('complete_profile')) 
         
     if not user.alumni_profile.profile_complete:
         flash('Successfully signed in with Google. Please complete your profile details.', 'warning')
@@ -339,22 +332,18 @@ def google_auth():
     flash('Login successful via Google!', 'success')
     return redirect(url_for('home'))
 
-
-# --- PROFILE COMPLETION ROUTE ---
-
+# --- PROFILE COMPLETION & DASHBOARD ---
 @app.route('/complete_profile', methods=['GET', 'POST'])
 @login_required
 def complete_profile():
-    if current_user.role.name not in ['Alumnus', 'Student']:
-        return redirect(url_for('dashboard')) 
-
-    # Handle case where Google user has no profile yet
-    if not current_user.alumni_profile:
+    if current_user.role.name not in ['Alumnus', 'Student']: return redirect(url_for('dashboard'))
+    
+    if not current_user.alumni_profile: 
         try:
             main_institute = Institute.query.get(1)
             new_alumni_profile = Alumni(
-                name=current_user.username, # Default to username
-                graduation_year=datetime.now().year, # Default
+                name=current_user.username, 
+                graduation_year=datetime.now().year, 
                 institute_id=main_institute.id
             )
             current_user.alumni_profile = new_alumni_profile
@@ -364,11 +353,8 @@ def complete_profile():
             flash(f"Error creating profile link: {e}", "danger")
             return redirect(url_for('logout'))
 
-    if current_user.alumni_profile.profile_complete:
-        return redirect(url_for('dashboard'))
-        
+    if current_user.alumni_profile.profile_complete: return redirect(url_for('dashboard'))
     form = ProfileCompletionForm()
-
     if form.validate_on_submit():
         try:
             alumni = current_user.alumni_profile
@@ -385,17 +371,14 @@ def complete_profile():
 
             alumni.profile_complete = True 
             db.session.commit()
-            flash('Profile successfully completed! You now have full access.', 'success')
+            flash('Profile successfully completed!', 'success')
             return redirect(url_for('dashboard'))
         except Exception as e:
             db.session.rollback()
             flash(f"Error saving profile: {e}", "danger")
             traceback.print_exc()
-
+            
     return render_template('complete_profile.html', title='Complete Profile', form=form)
-
-
-# --- DASHBOARD & ADMIN ROUTES ---
 
 @app.route('/dashboard')
 @login_required
@@ -407,10 +390,10 @@ def dashboard():
 
     elif current_user.role.name == 'Institute_Admin':
         return render_template('dashboard_institute.html', title='Institute Dashboard')
-    else:
+    else: 
         return redirect(url_for('home')) 
 
-
+# --- ML RECOMMENDATIONS ---
 @app.route('/recommendations')
 @login_required
 def recommendations():
@@ -432,11 +415,11 @@ def recommendations():
          
     return render_template('recommendations.html', recommended_alumni=recommended_alumni, title='Recommended Connections')
 
-
+# --- ADMIN ROUTES ---
 @app.route('/admin/register_student', methods=['GET', 'POST'])
 @login_required
 def admin_register_student():
-    if current_user.role.name != 'Institute_Admin': abort(403)
+    if current_user.role.name != 'Institute_Admin': abort(403) 
     form = AdminStudentRegistrationForm()
     if form.validate_on_submit():
         try:
@@ -477,7 +460,6 @@ def admin_register_student():
 
     return render_template('admin_register_student.html', title='Register New Student', form=form)
 
-
 @app.route('/admin/create_event', methods=['GET', 'POST'])
 @login_required
 def create_event():
@@ -511,7 +493,8 @@ def chatbot_api():
 
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-pro')
+        # --- CRITICAL FIX: Use the correct, stable model name ---
+        model = genai.GenerativeModel('gemini-1.0-pro') 
     except Exception as e:
         app.logger.error(f"Failed to configure Gemini model: {e}")
         return jsonify({'reply': 'Sorry, chatbot configuration error.'}), 500
@@ -527,9 +510,22 @@ def chatbot_api():
     except Exception as e:
         app.logger.error(f"Gemini API call failed: {e}")
         try:
-            if response.prompt_feedback.block_reason:
+            # Check for safety blocks
+            if response and response.prompt_feedback and response.prompt_feedback.block_reason:
                 bot_reply = "I'm sorry, I can't respond to that due to my safety settings."
+            else:
+                bot_reply = "Sorry, I encountered an error. Please try again."
         except Exception:
-             bot_reply = "Sorry, I encountered an error. Please try again."
+             bot_reply = "Sorry, I encountered an unknown error. Please try again."
              
     return jsonify({'reply': bot_reply})
+
+# --- ERROR HANDLERS (Optional but good practice) ---
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback() 
+    return render_template('500.html'), 500
