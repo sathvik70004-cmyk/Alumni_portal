@@ -35,7 +35,7 @@ class Config(object):
     GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-```
+# ```
 
 ### Summary of Actions
 
