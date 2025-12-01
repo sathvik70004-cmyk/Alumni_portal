@@ -393,7 +393,7 @@ def chatbot_api():
         return jsonify({'reply': 'Sorry, the chatbot service is not configured.'}), 500
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.0-pro')
+        model = genai.GenerativeModel('gemini-2.5-pro')
     except Exception as e:
         app.logger.error(f"Failed to configure Gemini model: {e}")
         return jsonify({'reply': 'Sorry, chatbot configuration error.'}), 500
