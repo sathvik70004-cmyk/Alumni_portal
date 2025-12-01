@@ -14,7 +14,7 @@ class Config(object):
         DB_URL = DB_URL.replace('postgres://', 'postgresql://', 1)
         SQLALCHEMY_DATABASE_URI = DB_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
         
-        # Force SSL for Render
+        # Force SSL
         if '?sslmode=' not in SQLALCHEMY_DATABASE_URI:
              SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI + '?sslmode=require'
     else:
@@ -22,8 +22,7 @@ class Config(object):
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # --- CRITICAL FIX: Keep-Alive Options ---
-    # This prevents "Socket error" / disconnects on free tier
+    # --- Keep-Alive Options ---
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,        # Pings DB before query to revive connection
         "pool_recycle": 300,          # Recycle connections every 5 minutes
