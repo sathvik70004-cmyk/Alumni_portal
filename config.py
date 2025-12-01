@@ -14,7 +14,7 @@ class Config(object):
         DB_URL = DB_URL.replace('postgres://', 'postgresql://', 1)
         SQLALCHEMY_DATABASE_URI = DB_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
         
-        # Force SSL
+        # Force SSL for Render
         if '?sslmode=' not in SQLALCHEMY_DATABASE_URI:
              SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI + '?sslmode=require'
     else:
@@ -23,6 +23,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # --- CRITICAL FIX: Keep-Alive Options ---
+    # This prevents "Socket error" / disconnects on free tier
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,        # Pings DB before query to revive connection
         "pool_recycle": 300,          # Recycle connections every 5 minutes
@@ -35,12 +36,3 @@ class Config(object):
     GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
     GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-# ```
-
-### Summary of Actions
-
-# 1.  **Add Templates:** Create `app/templates/404.html` and `app/templates/500.html` using the code above.
-# 2.  **Update Config:** Replace your `config.py` with the version above to include `SQLALCHEMY_ENGINE_OPTIONS`.
-# 3.  **Deploy:** Commit and push these changes to GitHub. Render will redeploy.
-
-# This combination will stop the crash loops (by having error pages) and prevent the root cause (by keeping the DB connection alive).
