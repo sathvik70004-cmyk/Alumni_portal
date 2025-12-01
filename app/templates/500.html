@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        h1 { font-size: 4em; margin-bottom: 10px; color: #d9534f; } /* Red for error */
+        p { font-size: 1.2em; margin-bottom: 30px; color: #666; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Institute Logo">
+                </a>
+            </div>
+             <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>500</h1>
+        <h2>Internal Server Error</h2>
+        <p>Something went wrong on our end.</p>
+        <a href="{{ url_for('home') }}" class="cta-button">Go Back Home</a>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Alumni Network</p>
+    </footer>
+</body>
+</html>
