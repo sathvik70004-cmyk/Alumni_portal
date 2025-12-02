@@ -5,29 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumni Portal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Google Font for Tech Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- BACKGROUND BLOBS (Lava Lamp Effect) -->
+    <div class="blob-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- CUSTOM CURSOR ELEMENTS -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
     <header>
         <nav>
             <div class="logo">
                 <a href="{{ url_for('home') }}">
+                    <!-- Ensure 'institute_logo' is passed from your route, or it defaults to 'logo.png' -->
                     <img src="{{ url_for('static', filename='images/' + (institute_logo if institute_logo else 'logo.png')) }}" alt="Institute Logo">
                 </a>
             </div>
-            <div class="menu-toggle">&#9776;</div>
+            <div class="menu-toggle"><i class="fas fa-bars"></i></div>
             <ul>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 <li><a href="{{ url_for('events_list') }}">Events</a></li>
                 <li><a href="{{ url_for('alumni_directory') }}">Alumni</a></li>
+                
                 {% if current_user.is_authenticated %}
                     {% if current_user.role.name == 'Institute_Admin' %}
                         <li><a href="{{ url_for('dashboard') }}">Admin Panel</a></li>
                     {% else %}
-                        <li><a href="{{ url_for('dashboard') }}">My Dashboard</a></li>
+                        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
                     {% endif %}
                     <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
                 {% else %}
                     <li><a href="#">Contact</a></li>
+                    <!-- Direct link to Google Login route -->
                     <li><a href="{{ url_for('google_login') }}" class="login-button">Login with Google</a></li>
                 {% endif %}
             </ul>
@@ -35,50 +53,94 @@
     </header>
 
     <main>
-        <section id="hero">
-            <h1>Welcome Back, Alumni!</h1>
-            <p>Reconnect with your classmates, explore career opportunities, and stay informed about the latest campus news and events.</p>
-            <a href="{{ url_for('alumni_directory') }}" class="cta-button">Join the Community</a>
+        <!-- HERO SECTION -->
+        <section id="hero" class="fade-in-up">
+            <h1>FUTURE CONNECT</h1>
+            <p>The next generation alumni network. Connect, Grow, Innovate.</p>
+            <div style="margin-top: 30px;">
+                <a href="{{ url_for('alumni_directory') }}" class="cta-button">Join Network</a>
+                <a href="#events" class="cta-button secondary" style="margin-left: 15px;">Explore Events</a>
+            </div>
         </section>
 
+        <!-- EVENTS SECTION -->
         <section id="events">
-            <h2>Upcoming Events</h2>
+            <h2 class="fade-in-up delay-100">Upcoming Events</h2>
             <div class="events-wrapper">
                 {% for event in events %}
-                <div class="event-card">
+                <div class="event-card fade-in-up delay-200">
                     <h3>{{ event.title }}</h3>
-                    <p>Date: {{ event.date_time.strftime('%b %d, %Y') }} | Location: {{ event.location }}</p>
-                    <a href="#">Details & RSVP</a>
+                    <!-- Format the date nicely -->
+                    <p><i class="far fa-calendar-alt"></i> {{ event.date_time.strftime('%b %d, %Y') }} <br> 
+                       <i class="fas fa-map-marker-alt"></i> {{ event.location }}</p>
+                    <a href="#">Details & RSVP <i class="fas fa-arrow-right"></i></a>
                 </div>
                 {% else %}
-                <p style="text-align: center; width: 100%;">No upcoming events scheduled at this time.</p>
+                <p style="text-align: center; width: 100%; color: var(--text-muted);">No upcoming events scheduled.</p>
                 {% endfor %}
             </div>
         </section>
 
-        <section id="jobs">
-            <h2>Alumni Job Board</h2>
+        <!-- JOBS SECTION -->
+        <section id="jobs" class="fade-in-up delay-100">
+            <h2>Career Opportunities</h2>
             <ul>
-                <li>Software Developer at TechCorp <span class="job-tag">Full-Time</span></li>
-                <li>Marketing Manager at Creative Solutions <span class="job-tag">Remote</span></li>
-                <li>Financial Analyst at Global Bank <span class="job-tag">Entry-Level</span></li>
+                <li>
+                    <div>
+                        <strong>Software Developer</strong> <br> <span style="color: var(--text-muted); font-size: 0.9em;">TechCorp</span>
+                    </div>
+                    <span class="job-tag">Full-Time</span>
+                </li>
+                <li>
+                    <div>
+                        <strong>Marketing Manager</strong> <br> <span style="color: var(--text-muted); font-size: 0.9em;">Creative Solutions</span>
+                    </div>
+                    <span class="job-tag">Remote</span>
+                </li>
+                <li>
+                    <div>
+                        <strong>Financial Analyst</strong> <br> <span style="color: var(--text-muted); font-size: 0.9em;">Global Bank</span>
+                    </div>
+                    <span class="job-tag">Entry-Level</span>
+                </li>
             </ul>
-            <a href="#" class="cta-button secondary">View All Listings</a>
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="#" class="cta-button secondary">View All Listings</a>
+            </div>
         </section>
 
+        <!-- TEAM SECTION -->
         <section id="team">
-            <h2>Meet the Team</h2>
+            <h2 class="fade-in-up">The Team</h2>
             <div class="team-grid">
-                <div class="team-member"><div class="team-member-photo"></div><h4>Teammate 1 Name</h4><p>Role/Title</p></div>
-                <div class="team-member"><div class="team-member-photo"></div><h4>Teammate 2 Name</h4><p>Role/Title</p></div>
-                <div class="team-member"><div class="team-member-photo"></div><h4>Teammate 3 Name</h4><p>Role/Title</p></div>
-                <div class="team-member"><div class="team-member-photo"></div><h4>Teammate 4 Name</h4><p>Role/Title</p></div>
-                <div class="team-member"><div class="team-member-photo"></div><h4>Teammate 5 Name</h4><p>Role/Title</p></div>
+                <div class="team-member fade-in-up delay-100">
+                    <div class="team-member-photo"><i class="fas fa-user"></i></div>
+                    <h4>Sai Sathvik</h4>
+                    <p>Lead</p>
+                </div>
+                <div class="team-member fade-in-up delay-200">
+                    <div class="team-member-photo"><i class="fas fa-code"></i></div>
+                    <h4>Bhavika</h4>
+                    <p>Frontend</p>
+                </div>
+                <div class="team-member fade-in-up delay-300">
+                    <div class="team-member-photo"><i class="fas fa-database"></i></div>
+                    <h4>Manish</h4>
+                    <p>Backend</p>
+                </div>
+                <div class="team-member fade-in-up delay-100">
+                    <div class="team-member-photo"><i class="fas fa-paint-brush"></i></div>
+                    <h4>Rabeena</h4>
+                    <p>Design</p>
+                </div>
             </div>
         </section>
     </main>
 
-    <button id="chat-toggle-button">💬 Chat</button>
+    <!-- CHATBOT BUTTON -->
+    <button id="chat-toggle-button"><i class="fas fa-comment-dots"></i> Chat</button>
+    
+    <!-- CHATBOT POPUP -->
     <div id="chatbot-popup" class="hidden">
         <div id="chat-header">
             <span>Alumni Assistant</span>
@@ -89,42 +151,71 @@
         </div>
         <div id="chat-input-area">
             <input type="text" id="chat-input" placeholder="Ask something...">
-            <button id="chat-send-button">Send</button>
+            <button id="chat-send-button"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2025 Alumni Network | Privacy Policy | Connect with us.</p>
+        <p>&copy; 2025 Alumni Network. Powered by Future Tech.</p>
     </footer>
 
+    <!-- JAVASCRIPT -->
     <script>
+        // --- 1. CUSTOM CURSOR LOGIC ---
+        // const cursorDot = document.querySelector('.cursor-dot');
+        // const cursorOutline = document.querySelector('.cursor-outline');
+
+        // // Only run if elements exist to prevent errors
+        // if (cursorDot && cursorOutline) {
+        //     window.addEventListener('mousemove', (e) => {
+        //         const posX = e.clientX;
+        //         const posY = e.clientY;
+
+        //         // Dot follows instantly
+        //         cursorDot.style.left = `${posX}px`;
+        //         cursorDot.style.top = `${posY}px`;
+
+        //         // Outline follows with animation
+        //         cursorOutline.animate({
+        //             left: `${posX}px`,
+        //             top: `${posY}px`
+        //         }, { duration: 500, fill: "forwards" });
+        //     });
+        // }
+
+        // --- 2. SCROLL REVEAL ANIMATION ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                    entry.target.style.opacity = '1';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            el.style.opacity = '0'; 
+            el.style.animationPlayState = 'paused'; 
+            observer.observe(el);
+        });
+
+        // --- 3. MOBILE MENU ---
         const menuToggle = document.querySelector('.menu-toggle');
         const navUl = document.querySelector('nav ul');
         if (menuToggle && navUl) {
             menuToggle.addEventListener('click', () => {
-                navUl.classList.toggle('active');
+                navUl.classList.toggle('active'); 
             });
         }
-    </script>
-    
-    <script>
-        const heroSection = document.getElementById('hero');
-        if (heroSection) {
-            heroSection.addEventListener('mousemove', (e) => {
-                const rect = heroSection.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                heroSection.style.setProperty('--mouse-x', `${x}px`);
-                heroSection.style.setProperty('--mouse-y', `${y}px`);
-            });
-            heroSection.addEventListener('mouseleave', () => {
-                heroSection.style.setProperty('--mouse-x', `50%`);
-                heroSection.style.setProperty('--mouse-y', `50%`);
-            });
-        }
-    </script>
-    
-    <script>
+
+        // --- 4. CHATBOT LOGIC ---
         const chatToggleButton = document.getElementById('chat-toggle-button');
         const chatbotPopup = document.getElementById('chatbot-popup');
         const chatCloseButton = document.getElementById('chat-close-button');

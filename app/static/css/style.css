@@ -1,16 +1,30 @@
-:root { --bg-dark: #0a0a12; --bg-card: #161625; --primary: #00f2ff; --primary-dim: rgba(0, 242, 255, 0.1); --secondary: #7000ff; --accent: #ff0055; --text-main: #ffffff; --text-muted: #a0a0b0; --glass: rgba(22, 22, 37, 0.7); --border: rgba(255, 255, 255, 0.05); }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Orbitron', 'Segoe UI', sans-serif; cursor: none; }
-body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; min-height: 100vh; position: relative; background-image: radial-gradient(var(--text-muted) 1px, transparent 1px); background-size: 40px 40px; }
-.cursor-dot { width: 8px; height: 8px; background: var(--primary); position: fixed; border-radius: 50%; z-index: 9999; pointer-events: none; }
-.cursor-outline { width: 40px; height: 40px; border: 2px solid var(--primary); position: fixed; border-radius: 50%; z-index: 9998; pointer-events: none; transition: all 0.2s ease-out; }
-body:hover .cursor-outline { opacity: 1; }
-a:hover ~ .cursor-outline, button:hover ~ .cursor-outline { width: 60px; height: 60px; background: var(--primary-dim); border-color: transparent; }
+/* --- GLOBAL VARIABLES (ULTRA-MODERN DARK THEME) --- */
+:root {
+    --bg-dark: #0a0a12; --bg-card: #161625; --primary: #00f2ff;
+    --primary-dim: rgba(0, 242, 255, 0.1); --secondary: #7000ff;
+    --accent: #ff0055; --text-main: #ffffff; --text-muted: #a0a0b0;
+    --glass: rgba(22, 22, 37, 0.7); --border: rgba(255, 255, 255, 0.05);
+}
+
+/* REMOVED 'cursor: none' here so the normal mouse pointer shows */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Orbitron', 'Segoe UI', sans-serif; }
+
+body {
+    background-color: var(--bg-dark); color: var(--text-main);
+    overflow-x: hidden; min-height: 100vh; position: relative;
+    background-image: radial-gradient(var(--text-muted) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+/* --- BLOBS (Lava Lamp Background) --- */
 .blob-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; background: var(--bg-dark); }
 .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6; animation: float 10s infinite alternate; }
 .blob-1 { top: 10%; left: 10%; width: 400px; height: 400px; background: var(--secondary); }
 .blob-2 { bottom: 20%; right: 10%; width: 300px; height: 300px; background: var(--primary); animation-delay: -2s; }
 .blob-3 { bottom: -10%; left: 30%; width: 350px; height: 350px; background: var(--accent); animation-delay: -5s; }
 @keyframes float { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,-40px) scale(1.1); } }
+
+/* --- HEADER --- */
 header { background: var(--glass); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
 nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 15px 20px; }
 .logo { width: 50px; height: 50px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; }
@@ -20,12 +34,16 @@ nav ul li a { color: var(--text-main); text-decoration: none; font-weight: 500; 
 nav ul li a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 .login-button { border: 1px solid var(--primary); padding: 8px 20px; border-radius: 4px; color: var(--primary); }
 .login-button:hover { background: var(--primary); color: var(--bg-dark); box-shadow: 0 0 20px var(--primary); }
+
+/* --- MAIN --- */
 main { max-width: 1200px; margin: 0 auto; padding: 40px 20px; z-index: 1; position: relative; }
 #hero { text-align: center; padding: 100px 20px; background: rgba(22,22,37,0.5); border: 1px solid var(--border); border-radius: 20px; backdrop-filter: blur(5px); margin-bottom: 60px; }
 #hero h1 { font-size: 3.5em; margin-bottom: 20px; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .cta-button { background: var(--primary); color: var(--bg-dark); padding: 15px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: transform 0.3s; }
 .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--primary); }
 .cta-button.secondary { background: transparent; border: 2px solid var(--secondary); color: var(--text-main); margin-left: 15px; }
+
+/* --- CARDS --- */
 .events-wrapper, .team-grid, #jobs ul, .alumni-grid { display: grid; gap: 25px; }
 .events-wrapper { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 .team-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
@@ -34,10 +52,14 @@ main { max-width: 1200px; margin: 0 auto; padding: 40px 20px; z-index: 1; positi
 .event-card:hover, .team-member:hover, .alumni-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 .team-member { text-align: center; }
 .team-member-photo { width: 80px; height: 80px; margin: 0 auto 15px; border-radius: 50%; background: var(--glass); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: 2em; color: #ccc; }
+
+/* --- ALUMNI & PROFILE --- */
 .alumni-photo-placeholder, .profile-photo { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); overflow: hidden; margin-bottom: 15px; }
 .alumni-photo-placeholder img, .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
 .profile-card { display: flex; gap: 30px; padding: 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; }
-#chat-toggle-button { position: fixed; bottom: 20px; right: 20px; background: var(--primary); border: none; width: 60px; height: 60px; border-radius: 50%; z-index: 1001; cursor: none; }
+
+/* --- CHATBOT --- */
+#chat-toggle-button { position: fixed; bottom: 20px; right: 20px; background: var(--primary); border: none; width: 60px; height: 60px; border-radius: 50%; z-index: 1001; cursor: pointer; }
 #chatbot-popup { position: fixed; bottom: 90px; right: 20px; width: 350px; height: 450px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; z-index: 1000; display: flex; flex-direction: column; }
 #chatbot-popup.hidden { display: none; }
 #chat-header { background: var(--secondary); padding: 10px; display: flex; justify-content: space-between; }
@@ -48,10 +70,18 @@ main { max-width: 1200px; margin: 0 auto; padding: 40px 20px; z-index: 1; positi
 #chat-input-area { display: flex; padding: 10px; border-top: 1px solid var(--border); }
 #chat-input { flex-grow: 1; background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 5px; }
 #chat-send-button { background: var(--primary); border: none; padding: 0 15px; margin-left: 5px; border-radius: 5px; color: var(--bg-dark); }
+
+/* --- FOOTER --- */
 footer { text-align: center; padding: 40px; background: var(--bg-card); border-top: 1px solid var(--border); color: var(--text-muted); margin-top: 50px; }
+
+/* --- ANIMATIONS --- */
 .fade-in-up { opacity: 0; transform: translateY(30px); animation: fadeInUp 0.8s forwards; }
 @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-.delay-100 { animation-delay: 0.1s; } .delay-200 { animation-delay: 0.2s; } .delay-300 { animation-delay: 0.3s; }
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+
+/* --- MOBILE --- */
 .menu-toggle { display: none; color: white; font-size: 24px; }
 @media (max-width: 768px) {
     .menu-toggle { display: block; }
@@ -59,6 +89,8 @@ footer { text-align: center; padding: 40px; background: var(--bg-card); border-t
     nav ul.active { display: flex; }
     .profile-card { flex-direction: column; align-items: center; }
 }
+
+/* Modern Login */
 .modern-login-card { max-width: 400px; margin: 0 auto; padding: 40px 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; text-align: center; }
 .btn-google { background-color: #db4437; color: white; border: none; width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; font-weight: bold; display: block; text-decoration: none; }
 .form-container { max-width: 450px; margin: 30px auto; padding: 30px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; }

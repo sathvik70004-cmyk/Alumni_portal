@@ -315,7 +315,7 @@ def chatbot_api():
     if not api_key: return jsonify({'reply': 'Chatbot unavailable.'}), 500
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.0-pro')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         data = request.get_json()
         response = model.generate_content(f"You are a helpful Alumni Assistant. User: {data.get('message')}")
         return jsonify({'reply': response.text})
